@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "labcli"
+version = "0.0.1"
+description = "Utilities and Management Tools for Network Automation Cookbook Book"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    'typer[all]>=0.12.3',
+    'python-dotenv>=1.0.0',
+    'jmespath>=1.0.1',
+    'PyYAML>=6.0.1',
+    'netmiko==4.3.0',
+    'ansible>=10.1.0',
+    'requests>=2.26.0',
+]
+dynamic = ["readme"]
+
+[project.optional-dependencies]
+dev = ["black", "flake8", "ruff", "pydocstyle"]
+
+[tool.setuptools]
+packages = ["labcli"]
+
+[project.scripts]
+labcli = "labcli.main:app"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"]}
+
+[tool.ruff]
+line-length = 120
+# Enable Pyflakes `E` and `F` codes by default.
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+]
+ignore = ["E501"]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "B", "C", "D", "E", "F"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+per-file-ignores = {}
+
+[tool.ruff.isort]
+known-third-party = ["typer", "python-dotenv"]
