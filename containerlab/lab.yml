@@ -1,8 +1,8 @@
 name: lab
-prefix: ""  # Empty string to not add a prefix to the containers
+prefix: "" # Empty string to not add a prefix to the containers
 
 mgmt:
-  network: network-observability
+  network: network-cookbook-lab
   ipv4-subnet: 198.51.100.0/24
 
 topology:
