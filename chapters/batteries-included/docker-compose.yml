@@ -1,0 +1,57 @@
+---
+networks:
+  network-cookbook-lab:
+    external: true
+    name: network-cookbook-lab
+
+volumes:
+  nautobot_postgres_data:
+
+services:
+
+  nautobot:
+    container_name: nautobot
+    image: ${NAUTOBOT_IMAGE:-docker.io/networktocode/nautobot:2.2-py3.10}
+    env_file:
+      - "../../.env"
+    ports:
+      - "8443:8443"
+      - "8080:8080"
+    restart: "unless-stopped"
+    volumes:
+      - ./nautobot/nautobot_config.py:/opt/nautobot/nautobot_config.py
+    networks:
+      - network-cookbook-lab
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://0.0.0.0:12201"
+
+  nautobot-redis:
+    container_name: nautobot-redis
+    image: ${REDIS_IMAGE:-redis:7.2-alpine}
+    command:
+      - "sh"
+      - "-c"
+      - "redis-server --appendonly yes --requirepass $$NAUTOBOT_REDIS_PASSWORD"
+    restart: "unless-stopped"
+    env_file:
+      - ../../.env
+    networks:
+      - network-cookbook-lab
+
+  nautobot-postgres:
+    container_name: nautobot-postgres
+    image: ${POSTGRES_IMAGE:-postgres:14}
+    environment:
+      NAUTOBOT_DB_ENGINE: "django.db.backends.postgres"
+      POSTGRES_USER: ${NAUTOBOT_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${NAUTOBOT_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${NAUTOBOT_POSTGRES_DB}
+    volumes:
+      - nautobot_postgres_data:/var/lib/postgresql/data
+    restart: "unless-stopped"
+    env_file:
+      - ../../.env
+    networks:
+      - network-cookbook-lab
