@@ -758,7 +758,7 @@ def docker_rm(
 @docker_app.command("network")
 def docker_network(
     action: Annotated[DockerNetworkAction, typer.Argument(..., help="Action to perform", case_sensitive=False)],
-    name: Annotated[str, typer.Option("-n", "--name", help="Network name")] = "network-observability",
+    name: Annotated[str, typer.Option("-n", "--name", help="Network name")] = "network-cookbook-lab",
     driver: Annotated[str, typer.Option(help="Network driver")] = "bridge",
     subnet: Annotated[str, typer.Option(help="Network subnet")] = "198.51.100.0/24",
     verbose: Annotated[bool, typer.Option(help="Verbose mode")] = False,
@@ -793,7 +793,7 @@ def lab_deploy(
     ),
     network_name: Annotated[
         str, typer.Option(help="Network name", envvar="LAB_NETWORK_NAME")
-    ] = "network-observability",
+    ] = "network-cookbook-lab",
     subnet: Annotated[str, typer.Option(help="Network subnet", envvar="LAB_SUBNET")] = "198.51.100.0/24",
     sudo: Annotated[bool, typer.Option(help="Use sudo to run containerlab", envvar="LAB_SUDO")] = False,
 ):

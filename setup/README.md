@@ -109,10 +109,10 @@ This step ensures that your SSH key is included in the DigitalOcean droplet buil
 You need to configure the setup process to install your forked repository when creating and provisioning the DigitalOcean droplet. To do this, set the following environment variable in your `.setup.env` file:
 
 ```bash
-LABCLI_REPO="https://github.com/<your-username>/cookbook-lab.git"
+COOKBOOK_LAB_REPO="https://github.com/<your-username>/cookbook-lab.git"
 ```
 
-Additionally, you can specify a particular branch to be installed by setting the `LABCLI_BRANCH` variable. By default is going to use the `main` branch.
+Additionally, you can specify a particular branch to be installed by setting the `COOKBOOK_LAB_BRANCH` variable. By default is going to use the `main` branch.
 
 ### 9. Create a Digital Ocean droplet
 

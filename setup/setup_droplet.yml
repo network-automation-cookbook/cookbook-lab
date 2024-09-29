@@ -124,9 +124,9 @@
   tasks:
     - name: Clone cookbook-lab
       ansible.builtin.git:
-        repo: "{{ lookup('env', 'LABCLI_REPO' | default('https://github.com/network-automation-cookbook/cookbook-lab')) }}"
+        repo: "{{ lookup('env', 'COOKBOOK_LAB_REPO' | default('https://github.com/network-automation-cookbook/cookbook-lab')) }}"
         dest: /root/cookbook-lab
-        version: "{{ lookup('env', 'LABCLI_BRANCH' | default('main')) }}"
+        version: "{{ lookup('env', 'COOKBOOK_LAB_BRANCH' | default('main')) }}"
 
     - name: Copy .env file
       ansible.builtin.copy:

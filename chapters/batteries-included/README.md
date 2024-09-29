@@ -51,13 +51,13 @@ The following diagram illustrates the topology of the lab environment:
 To check if the lab environment is running, use the following command:
 
 ```bash
-netobs lab show
+labcli lab show
 ```
 
 This command will display all the containers and Containerlab devices currently running. If none are listed, you can start the environment with:
 
 ```bash
-netobs lab prepare --scenario batteries-included
+labcli lab prepare --scenario batteries-included
 ```
 
 ---
@@ -75,10 +75,10 @@ The `cEOS` devices (`cEOS-01` and `cEOS-02`) are simulated network routers runni
 To view the current network topology and ensure the devices are running, use the following command:
 
 ```bash
-netobs containerlab inspect
+labcli containerlab inspect
 
 # If sudo mode is needed
-netobs containerlab inspect --sudo
+labcli containerlab inspect --sudo
 ```
 
 This will display a detailed overview of the Containerlab environment, including the status of the `cEOS` devices.
@@ -90,8 +90,8 @@ If is giving you an error about permissions, you might need to run the command i
 You can log into the `cEOS` devices using SSH to perform network operations, such as shutting down interfaces or viewing configuration details:
 
 ```bash
-# Example connecting to ceos-02 using the default netobs credentials
-ssh netobs@ceos-02
+# Example connecting to ceos-02 using the default labcli credentials
+ssh admin@ceos-02
 ```
 
 Once logged in, you can execute standard network commands. For example, to shut down an interface:
@@ -138,13 +138,13 @@ Before populating Nautobot with data from your network devices, ensure that the 
    Run the following command to check the status of the `nautobot` service:
 
    ```bash
-   netobs lab show | grep nautobot
+   labcli lab show | grep nautobot
    ```
 
    If the service is still starting, you will see a message indicating its health status as `(health: starting)`. For example:
 
    ```shell
-   ❯ netobs lab show | grep nautobot
+   ❯ labcli lab show | grep nautobot
    nautobot            docker.io/networktocode/nautobot:2.2-py3.10    "/docker-entrypoint.…"   nautobot            About a minute ago   Up About a minute (health: starting)   0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 0.0.0.0:8443->8443/tcp, :::8443->8443/tcp
    ```
 
@@ -159,7 +159,7 @@ Before populating Nautobot with data from your network devices, ensure that the 
    You can follow the logs of the Nautobot container to monitor its startup process. Use the command:
 
    ```bash
-   netobs docker logs nautobot --tail 10 --follow
+   labcli docker logs nautobot --tail 10 --follow
    ```
 
    Wait until you see the message `Nautobot initialized!`, which confirms that Nautobot is ready for use.
@@ -167,7 +167,7 @@ Before populating Nautobot with data from your network devices, ensure that the 
 Once Nautobot is ready, you can populate it with data from your network devices by running the following command:
 
 ```bash
-netobs utils load-nautobot
+labcli utils load-nautobot
 ```
 
 This command will load the necessary data into Nautobot, making it fully operational and ready for use with the other components in your observability stack.
@@ -199,190 +199,14 @@ Nautobot can be queried using its GraphQL API. For example, to enrich device dat
 
 This query will return device names and their corresponding sites, which can then be used to add context to your Grafana visualizations, enhancing the insights you can derive from your observability data.
 
-### Telegraf
-
-Telegraf is an agent used for collecting and reporting metrics. In this lab, Telegraf is configured to collect metrics from `cEOS` devices using SNMP, gNMI and SSH protocols, which it then forwards to Prometheus. The data collected from the different methods is normalized for easier dashboarding and creation of alerts.
-
-It also performs synthetic monitoring on the devices and services of the stach using `ping` and `HTTP` probes against them.
-
-#### Checking Telegraf Logs
-
-To ensure that Telegraf is running correctly and collecting metrics, you can check its logs with the following command:
-
-```bash
-netobs docker logs telegraf-01 --tail 20 --follow
-```
-
-This will display real-time logs from Telegraf, helping you verify that it is successfully scraping metrics from the `cEOS` devices.
-
-#### Viewing Prometheus Metrics
-
-Telegraf exposes metrics that can be scraped by Prometheus. To view these metrics directly, you can see them in your browser by going to the URL `http://<lab-machine-address>:<prometheus-port>/metrics`:
-
-```bash
-# Telegraf-01 metrics endpoint
-http://<lab-machine-address>:9004/metrics
-
-# Telegraf-02 metrics endpoint
-http://<lab-machine-address>:9005/metrics
-```
-
-You can check the status of the Telegraf targets and the metrics being collected by looking into Prometheus web interface `http://<lab-machine-address>:9090/targets`.
-
-#### Running Network Commands from Inside the Telegraf Container
-
-You may need to troubleshoot or run network commands from within the Telegraf container. To do this, use the following command:
-
-```bash
-netobs docker exec telegraf-01 sh
-```
-
-Once inside the container, you can run network commands like `ping` to test connectivity:
-
-```bash
-ping ceos-01
-```
-
-Or even open a Python terminal and run commands with [netmiko](https://github.com/ktbyers/netmiko)!.
-
-```bash
-# Open the python terminal
-python
-```
-
-To test it you can use the following snippet.
-
-```python
-import netmiko
-from rich.pretty import print as rprint
-
-device = netmiko.ConnectHandler(host="ceos-02")
-
-result = device.send_command("show version")
-
-rprint(result)
-```
-
-#### Verifying Metrics Scraping in Prometheus
-
-To view the Telegraf metrics scraped from Prometheus, you can access the Prometheus web interface in your browser. The URL will typically be something like:
-
-```
-http://<lab-machine-address>:9090/targets
-```
-
-Here, you can see the status of the Telegraf targets and the metrics being collected.
-
-### Logstash
-
-Logstash is a data processing pipeline that ingests logs from network devices and forwards them to Grafana Loki for centralized log storage and analysis. In this lab scenario, Logstash is configured to collect Syslog data from the `cEOS` devices, parse their messages with an emphasis on the interfaces `UPDOWN` events for alert generation.
-
-#### Checking Logstash Logs
-
-To verify that Logstash is running properly and processing logs, you can check its logs with the following command:
-
-```bash
-netobs docker logs logstash --tail 20 --follow
-```
-
-This command will display the real-time logs from Logstash, helping you ensure that it is correctly receiving by showing its output in a `rubydebug` format.
-
-#### Verifying Log Ingestion in Loki
-
-Once Logstash is confirmed to be running, you can verify that logs are being ingested into Grafana Loki. Access the Loki targets via the Grafana web interface:
-
-```
-http://<lab-machine-address>:3000/explore
-```
-
-In the **Explore** section, select **Loki** as the data source and use the following LogQL query to check for recent logs:
-
-```logql
-{collector="logstash"}
-```
-
-This query will display all logs processed by Logstash, allowing you to validate that the pipeline is functioning as expected.
-
-### Prometheus
-
-Prometheus is a time-series database used to scrape, store, and query metrics. In this lab, Prometheus collects metrics from Telegraf, allowing you to analyze network performance and trends.
-
-#### Checking Prometheus Status
-
-To check the status of Prometheus and its targets, you can visit the Prometheus web interface:
-
-```
-http://<lab-machine-address>:9090/targets
-```
-
-This page will show you all the active targets, including Telegraf, and whether Prometheus is successfully scraping them.
-
-#### Querying Metrics with PromQL
-
-PromQL is the query language used by Prometheus to retrieve metrics. You can access the Prometheus query interface through:
-
-```
-http://<lab-machine-address>:9090/graph
-```
-
-![Prometheus Web Interface](./../../pics/prometheus-web-interface.png)
-
-Example query to check network interface metrics:
-
-```promql
-rate(interface_in_octets{device="ceos-02"}[5m])
-```
-
-This query will show the rate of traffic flowing through interfaces, averaged over the last 5 minutes.
-
-### Grafana
-
-Grafana is the visualization layer of the observability stack. It is used to create dashboards that display metrics collected by Prometheus and logs from Loki.
-
-#### Accessing Grafana
-
-To access Grafana, open your web browser and go to:
-
-```
-http://<lab-machine-address>:3000
-```
-
-Login with the default credentials (usually `admin/admin`) and explore the pre-built dashboards. These dashboards are connected to Prometheus, Loki and Nautobot, providing real-time insights into network performance and events all with contextual information from Nautobot.
-
-![Grafana Device Dashboard](./../../pics/grafana-device-dashboard.png)
-
-#### Creating a Custom Dashboard
-
-To create a custom dashboard:
-
-1. Click on **Create** > **Dashboard**.
-2. Add a new panel, and select **Prometheus** as the data source.
-3. Use PromQL to query specific metrics and visualize them.
-
-For example, you could create a panel to show CPU usage across your `cEOS` devices.
-
-### Alertmanager
-
-Alertmanager is responsible for managing alerts generated by Prometheus. It routes these alerts to various destinations based on predefined rules.
-
-#### Checking Alertmanager Status
-
-You can check the status and configuration of Alertmanager by accessing:
-
-```
-http://<alertmanager_ip>:9093
-```
-
-This interface allows you to view active alerts, silence them, or check the routing rules.
-
 ---
 
 ## Working with the Lab
 
 In this lab, we'll perform a task that utilizes several commands to help you understand how to interact with the lab environment. To make it interesting let's imagine the following scenario:
 
-* **Problem:** The router `ceos-02` has strict configuration policies that allow a maximum of two static routes to be configured, only when necessary. If this threshold is exceeded, the network team should be alerted.
-* **Solution:** The command `show ip route summary` provides a clear table in the CLI, showing the number of routes based on their source. By capturing and parsing this data, we can create metrics to set up a `warning` alert for the network team and develop a dashboard to display route counts over time.
+- **Problem:** The router `ceos-02` has strict configuration policies that allow a maximum of two static routes to be configured, only when necessary. If this threshold is exceeded, the network team should be alerted.
+- **Solution:** The command `show ip route summary` provides a clear table in the CLI, showing the number of routes based on their source. By capturing and parsing this data, we can create metrics to set up a `warning` alert for the network team and develop a dashboard to display route counts over time.
 
 ### Collecting Data
 
@@ -393,7 +217,7 @@ First, let's test collecting data via SSH CLI and parsing it with a Python scrip
 1. **Connect to `telegraf-01`:**
 
    ```bash
-   netobs docker exec telegraf-01 bash
+   labcli docker exec telegraf-01 bash
    ```
 
 2. **Enter the Python interpreter:**
@@ -509,22 +333,22 @@ First, let's test collecting data via SSH CLI and parsing it with a Python scrip
    After saving your changes, you need to apply them to the Telegraf instances. Run the following command:
 
    ```bash
-   netobs lab update telegraf-01 telegraf-02
+   labcli lab update telegraf-01 telegraf-02
    ```
 
    This command will restart the containers to ensure the new configuration is applied.
 
 10. **Verify the New Metrics:**
 
-   To check if the new metric has been successfully added, run the following command:
+To check if the new metric has been successfully added, run the following command:
 
-   ```bash
-   netobs docker logs telegraf-01 -t 20 -f | grep routes
-   ```
+```bash
+labcli docker logs telegraf-01 -t 20 -f | grep routes
+```
 
 11. **Success!**
 
-   If everything is set up correctly, you'll see the metrics displayed in Influx Line Protocol format. You can also view them in Prometheus format by opening your browser and navigating to `http://<lab-machine-address>:9005` for Telegraf-02.
+If everything is set up correctly, you'll see the metrics displayed in Influx Line Protocol format. You can also view them in Prometheus format by opening your browser and navigating to `http://<lab-machine-address>:9005` for Telegraf-02.
 
 ### Querying Data
 
@@ -537,8 +361,8 @@ routes_static_persistent_total{device="ceos-02"}
 You will see this metric increase if you add more routes to your device. For example, to add a static route on `ceos-02`, use the following commands:
 
 ```shell
-❯ ssh netobs@ceos-02
-(netobs@ceos-02) Password:
+❯ ssh admin@ceos-02
+(admin@ceos-02) Password:
 ceos-02> enable
 ceos-02# configure terminal
 ceos-02(config)# ip route 10.77.70.0/24 10.222.0.2
@@ -547,160 +371,3 @@ ceos-02#
 ```
 
 Wait a couple of minutes, and you should see the static route metric counter increase by 1 on `ceos-02`.
-
-![Prometheus Routes Graph](./../../pics/prometheus-routes-graph.png)
-
-### Creating and Managing Alerts
-
-Now that we have metrics successfully passing through our system, let's create an alert that notifies us when more than two static routes have been configured on `ceos-02`, violating our policy.
-
-1. **Create a Prometheus Alerting Rule:**
-
-   First, we need to create an alert in the Prometheus alerting rules configuration to detect when the `routes_static_persistent_total` metric exceeds 2 for the device `ceos-02`. Add the following configuration to [`prometheus/rules/alerting_rules.yml`](./prometheus/rules/alerting_rules.yml):
-
-   ```yaml
-   groups:
-     # Other alerts already configured
-
-     - name: Routes Statics Violation
-       rules:
-         - alert: RoutesStaticsViolation
-           expr: routes_static_persistent_total{device="ceos-02"} > 2
-           for: 10s
-           labels:
-             severity: warning
-             source: stack
-             environment: network-observability-lab
-             device: '{{ $labels.device }}'
-             device_role: '{{ $labels.device_role }}'
-             site: '{{ $labels.site }}'
-             region: '{{ $labels.region }}'
-             instance: '{{ $labels.host }}'
-           annotations:
-             summary: "[NET] Device {{ $labels.device }}: Static Routes Violation"
-             description: "Device {{ $labels.device }} has static routes violation!"
-   ```
-
-   We use labels such as `device`, `device_role`, and others to enrich the alert with details from our metrics.
-
-2. **Set Up Slack Integration:**
-
-   To send alerts to Slack, you'll need to create an integration in your Slack workspace. Follow this [guide to create an incoming webhook](https://api.slack.com/messaging/webhooks). This webhook will be used to send alerts to Slack.
-
-3. **Save the Webhook URL:**
-
-   Save the webhook URL in a file named [`alertmanager/slack_webhook`](./alertmanager/slack_webhook). This file is ignored by Git to keep it secure, ensuring it’s not submitted to GitHub but still accessible to Alertmanager.
-
-4. **Add a Route and Receiver for Slack:**
-
-   Add a new route and receiver configuration for the Slack webhook in the [`alertmanager/alertmanager.yml`](./alertmanager/alertmanager.yml) file:
-
-   ```yaml
-   # Omitting other config sections
-
-   route:
-     # Omitting basic route configuration
-     routes:
-       # Omitting other routes, receivers, and matchers configuration
-
-       - receiver: 'slack'
-         continue: true
-         matchers:
-           - alertname = RoutesStaticsViolation
-
-   receivers:
-     # Omitting other receivers specs
-
-     - name: 'slack'
-       slack_configs:
-         - send_resolved: true
-           api_url_file: /etc/alertmanager/slack_webhook
-           channel: '#alerts'                           # Or your preferred channel
-           title: '{{ .CommonAnnotations.summary }}'
-           text: '{{ .CommonAnnotations.description }}'
-   ```
-
-5. **Map the Webhook File to Alertmanager:**
-
-   Map the `slack_webhook` file into the `alertmanager` container so it can read it for sending alert notifications. Add the following line to the `alertmanager.volumes` section in the [`docker-compose.yml`](./docker-compose.yml) file:
-
-   ```yaml
-   services:
-     # Omitting other services
-
-     alertmanager:
-       # Omitting other configuration parameters
-
-       volumes:
-         # Omitting other volumes
-
-         - ./alertmanager/slack_webhook:/etc/alertmanager/slack_webhook
-   ```
-
-6. **Update Prometheus and Alertmanager Containers:**
-
-   To apply these changes, update both the `prometheus` and `alertmanager` containers by running the following command:
-
-   ```bash
-   netobs lab update prometheus alertmanager
-   ```
-
-#### Triggering and Monitoring Alerts
-
-Now that we have everything set up for alerting, let's trigger an alert to test the configuration.
-
-1. **Add Additional Routes to `ceos-02`:**
-
-   Connect to `ceos-02` and add a few more static routes to exceed the threshold:
-
-   ```bash
-   ❯ ssh netobs@ceos-02
-   (netobs@ceos-02) Password:
-   ceos-02> enable
-   ceos-02# configure terminal
-   ceos-02(config)# ip route 10.77.71.0/24 10.222.0.2
-   ceos-02(config)# ip route 10.77.72.0/24 10.222.0.2
-   ceos-02(config)# ip route 10.77.73.0/24 10.222.0.2
-   ceos-02(config)# exit
-   ceos-02#
-   ```
-
-2. **Monitor the Alert in Prometheus:**
-
-   Check the Prometheus Alerts page (`http://<lab-machine-address>:9090/alerts`) to see if your alert rule is triggered. You should see the alert in a "firing" state if the conditions are met.
-
-   ![Prometheus Rule Firing](./../../pics/prometheus-rule-firing.png)
-
-3. **Check Alerts in Alertmanager:**
-
-   Once the alert is in the "firing" state, it will be sent to Alertmanager. You can view the active alerts handled by Alertmanager on its Alerts page (`http://<lab-machine-address>:9093`):
-
-   ![Alertmanager Alerts](./../../pics/alertmanager-alerts.png)
-
-4. **Verify the Alert in Slack:**
-
-   If everything is set up correctly, you should also see the alert notification in your Slack channel.
-
-   ![Slack Alerts](./../../pics/slack-alerts.png)
-
-5. **Resolve the Alert:**
-
-   To stop the alert warnings, resolve the issue by deleting the extra routes added earlier:
-
-   ```bash
-   ❯ ssh netobs@ceos-02
-   (netobs@ceos-02) Password:
-   ceos-02> enable
-   ceos-02# configure terminal
-   ceos-02(config)# no ip route 10.77.71.0/24 10.222.0.2
-   ceos-02(config)# no ip route 10.77.72.0/24 10.222.0.2
-   ceos-02(config)# no ip route 10.77.73.0/24 10.222.0.2
-   ceos-02(config)# exit
-   ceos-02#
-   ```
-
-   After a few moments, the alert should clear, and everything will return to normal.
-
-6. **Provide Feedback:**
-
-   If you have any ideas or feedback on what to integrate or alert on for this lab scenario, feel free to open a discussion or issue in the GitHub repository.

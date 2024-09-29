@@ -37,7 +37,7 @@ To get started with the network lab and observability stack, you need to:
 cp example.env .env
 ```
 
-2. Install the `netobs` utility command that helps manage the entire lab environment.
+2. Install the `labcli` utility command that helps manage the entire lab environment.
 
 ```bash
 # Install the python dependencies
@@ -48,43 +48,43 @@ pip install .
 
 ```bash
 # Start the network lab
-netobs lab deploy --scenario batteries-included
+labcli lab deploy --scenario batteries-included
 ```
 
 > NOTE: Our lab comes with a `batteries-included` setup, providing you with everything you need to get started with network observability right away. This setup includes pre-configured tools and detailed step-by-step instructions to help you explore and learn without any hassle. Head over to the [instructions](./chapters/batteries-included/README.md) section to begin!
 
 ---
 
-## Managing Lab Environment with `netobs`
+## Managing Lab Environment with `labcli`
 
-The `netobs` utility tool simplifies managing and monitoring the network lab and observability stack set up within this repository. It provides a suite of commands designed to streamline various tasks associated with your network infrastructure.
+The `labcli` utility tool simplifies managing and monitoring the network lab and observability stack set up within this repository. It provides a suite of commands designed to streamline various tasks associated with your network infrastructure.
 
 ### Top-Level Commands
 
-The `netobs` utility includes five main commands to help manage the environment:
+The `labcli` utility includes five main commands to help manage the environment:
 
-- **`netobs setup`**: Manages the overall setup of a remote DigitalOcean droplet hosting this repository and its lab environment. This command simplifies the process of preparing a hosting environment for users.
+- **`labcli setup`**: Manages the overall setup of a remote DigitalOcean droplet hosting this repository and its lab environment. This command simplifies the process of preparing a hosting environment for users.
 
-- **`netobs containerlab`**: Manages the `containerlab` pre-configured setup. All lab scenarios presented in the chapters operate under this network lab configuration.
+- **`labcli containerlab`**: Manages the `containerlab` pre-configured setup. All lab scenarios presented in the chapters operate under this network lab configuration.
 
-- **`netobs docker`**: Manages the Docker Compose setups for each lab scenario. It ensures the appropriate containers are running for each specific lab exercise.
+- **`labcli docker`**: Manages the Docker Compose setups for each lab scenario. It ensures the appropriate containers are running for each specific lab exercise.
 
-- **`netobs lab`**: A wrapper utility that combines `netobs containerlab` and various `netobs docker` commands to perform major actions. For example:
+- **`labcli lab`**: A wrapper utility that combines `labcli containerlab` and various `labcli docker` commands to perform major actions. For example:
 
-  - `netobs lab purge`: Cleans up all running environments.
-  - `netobs lab prepare --scenario ch7`: Purges any scenario that is up and prepares the environment for Chapter 7.
+  - `labcli lab purge`: Cleans up all running environments.
+  - `labcli lab prepare --scenario ch7`: Purges any scenario that is up and prepares the environment for Chapter 7.
 
-- **`netobs utils`**: Contains utility commands for interacting with the lab environment. This includes scripts for enabling/disabling an interface on a network device to simulate interface flapping and other useful actions.
+- **`labcli utils`**: Contains utility commands for interacting with the lab environment. This includes scripts for enabling/disabling an interface on a network device to simulate interface flapping and other useful actions.
 
 ### Example Usage
 
-For instance, the `netobs lab deploy` command builds and starts a `containerlab` environment along with the observability stack. This command sets up the entire lab scenario, ensuring that all necessary components are up and running.
+For instance, the `labcli lab deploy` command builds and starts a `containerlab` environment along with the observability stack. This command sets up the entire lab scenario, ensuring that all necessary components are up and running.
 
 ```bash
 # Start the network lab
-❯ netobs lab deploy batteries-included --sudo
+❯ labcli lab deploy batteries-included --sudo
 [21:50:42] Deploying lab environment
-           Network create: network-observability
+           Network create: network-cookbook-lab
            Running command: docker network create --driver=bridge  --subnet=198.51.100.0/24 network-observability
            Successfully ran: network create
 ─────────────────────────────────────────────────── End of task: network create ────────────────────────────────────────────────────
@@ -105,14 +105,10 @@ INFO[0001] Creating virtual wire: ceos-01:eth1 <--> ceos-02:eth1
 [21:51:14] Successfully ran: Deploying containerlab topology
 ─────────────────────────────────────────── End of task: Deploying containerlab topology ───────────────────────────────────────────
 
-           Running command: docker compose --project-name netobs -f chapters/docker-compose.yml --verbose up -d --remove-orphans
+           Running command: docker compose --project-name labcli -f chapters/docker-compose.yml --verbose up -d --remove-orphans
 [+] Building 0.0s (0/0)
 [+] Running 10/10
- ✔ Volume "netobs_grafana-01_data"     Created                                                                                 0.0s
- ✔ Volume "netobs_prometheus-01_data"  Created                                                                                 0.0s
- ✔ Container netobs-grafana-01-1       Started                                                                                 0.7s
- ✔ Container netobs-prometheus-01-1    Started                                                                                 1.3s
- ✔ Container netobs-telegraf-02-1      Started                                                                                 1.0s
+... too be updated ..
 [21:51:16] Successfully ran: start stack
 ───────────────────────────────────────────────────── End of task: start stack ─────────────────────────────────────────────────────
 ```
@@ -133,21 +129,5 @@ Each practical chapter provides two lab scenarios:
 ### Overview of Practical Chapters
 
 Here is a brief overview of the practical chapters and the key concepts you will encounter:
-
-- **Chapter 3 - Network Observability Data:** This chapter explores various methods and techniques to obtain operational data from network devices using popular Python libraries and other low-level tools. It covers protocols such as SNMP, gNMI, SSH CLI parsing, REST APIs, eBPF and more.
-
-- **Chapter 5 - Data Collectors:** Building on the concepts from Chapter 3, this chapter introduces tools like Telegraf and Logstash, which are widely used in production environments to collect metrics and syslog data from network devices.
-
-- **Chapter 6 - Data Distribution and Processing:** This chapter delves deeper into configuring Telegraf and Logstash to normalize and enrich the collected data. It also introduces the use of Message Brokers like Kafka for handling data in larger environments, with practical examples included in the lab.
-
-- **Chapter 7 - Data Storage with Prometheus and Loki:** This chapter focuses on using Prometheus to scrape, store, and analyze normalized and enriched metrics from Telegraf. It includes practical examples of PromQL queries to extract meaningful insights from your network data. Additionally, the chapter covers Loki for log data storage and retrieval using LogQL, as well as the implementation of recording rules in both systems to optimize query performance and precompute frequent calculations.
-
-- **Chapter 8 - Data Visualization:** This chapter centers on Grafana, demonstrating how to create panels and dashboards to visualize the data collected from the network.
-
-- **Chapter 9 - Alerting:** This chapter dives into generating alerts with Prometheus and Loki based on the collected data. It introduces Alertmanager, which manages the routing of alerts to different destinations, including integration with [Keep](https://keephq.dev) for alert and incident management workflows.
-
-- **Chapter 12 - Automation with Observability Data:** This chapter delves into leveraging automation tools, such as [Prefect](https://www.prefect.io/), to streamline and automate day 2 operations using your network’s observability data. It highlights how automation can enhance efficiency, reduce manual effort, and improve the reliability of ongoing network management tasks.
-
-- **Chapter 13 - Machine Learning and AI:** This chapter explores how machine learning and AI techniques can enhance your observability practices. It covers basic forecasting, AI-driven Root Cause Analysis (RCA), and advanced anomaly detection.
 
 - **[`Batteries Included`](./chapters/batteries-included/) Scenario:** This scenario brings everything together in a fully configured environment, offering a glimpse into the full potential of these tools. The batteries-included scenario [README](./chapters/batteries-included/README.md) provides an overview and detailed explanation of the setup, giving you a holistic view of what is achievable with this setup.
