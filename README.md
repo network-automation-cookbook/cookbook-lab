@@ -85,7 +85,7 @@ For instance, the `labcli lab deploy` command builds and starts a `containerlab`
 ❯ labcli lab deploy batteries-included --sudo
 [21:50:42] Deploying lab environment
            Network create: network-cookbook-lab
-           Running command: docker network create --driver=bridge  --subnet=198.51.100.0/24 network-observability
+           Running command: docker network create --driver=bridge  --subnet=198.51.100.0/24 network-cookbook-lab
            Successfully ran: network create
 ─────────────────────────────────────────────────── End of task: network create ────────────────────────────────────────────────────
 
