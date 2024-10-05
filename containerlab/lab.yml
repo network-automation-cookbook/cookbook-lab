@@ -64,8 +64,8 @@ topology:
     - endpoints: ["srl-01:e1-1", "srl-02:e1-1"]
     - endpoints: ["srl-01:e1-2", "srl-02:e1-2"]
     # Juniper cRPD connections
-    - endpoints: ["crpd-01:eth1", "crpd-01:eth1"]
+    - endpoints: ["crpd-01:eth1", "crpd-02:eth1"]
     - endpoints: ["crpd-01:eth2", "ceos-01:eth3"]
     - endpoints: ["crpd-02:eth2", "ceos-02:eth3"]
     - endpoints: ["crpd-01:eth3", "srl-01:e1-3"]
-    - endpoints: ["crpd-02:eth3", "srl-01:e1-3"]
+    - endpoints: ["crpd-02:eth3", "srl-02:e1-3"]
