@@ -7,11 +7,18 @@ mgmt:
 
 topology:
   kinds:
-    ceos:
+    arista_ceos:
       image: ${CEOS_IMAGE:-ceos:image}
+    nokia_srlinux:
+      image: ghcr.io/nokia/srlinux
+    juniper_crpd:
+      image: crpd:20.2R1.10
+    linux:
+      image: ghcr.io/hellt/network-multitool
+
   nodes:
     ceos-01:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 198.51.100.11
       startup-config: startups/ceos-01.conf
       publish:
@@ -21,7 +28,7 @@ topology:
         - udp/161
         - tcp/5900
     ceos-02:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 198.51.100.12
       startup-config: startups/ceos-02.conf
       publish:
@@ -32,7 +39,33 @@ topology:
         - tcp/5900
       # ports:
       #   - 51161:161/udp
+    crpd-01:
+      kind: juniper_crpd
+      mgmt-ipv4: 198.51.100.21
+    crpd-02:
+      kind: juniper_crpd
+      mgmt-ipv4: 198.51.100.22
+    srl-01:
+      kind: nokia_srlinux
+      mgmt-ipv4: 198.51.100.31
+    srl-02:
+      kind: nokia_srlinux
+      mgmt-ipv4: 198.51.100.31
+    client1:
+      kind: linux
+    client2:
+      kind: linux
 
   links:
+    # Arista connections
     - endpoints: ["ceos-01:eth1", "ceos-02:eth1"]
     - endpoints: ["ceos-01:eth2", "ceos-02:eth2"]
+    # SR Linux connections
+    - endpoints: ["srl-01:e1-1", "srl-02:e1-1"]
+    - endpoints: ["srl-01:e1-2", "srl-02:e1-2"]
+    # Juniper cRPD connections
+    - endpoints: ["crpd-01:eth1", "crpd-01:eth1"]
+    - endpoints: ["crpd-01:eth2", "ceos-01:eth3"]
+    - endpoints: ["crpd-02:eth2", "ceos-02:eth3"]
+    - endpoints: ["crpd-01:eth3", "srl-01:e1-3"]
+    - endpoints: ["crpd-02:eth3", "srl-01:e1-3"]
