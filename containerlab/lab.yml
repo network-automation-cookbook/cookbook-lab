@@ -12,7 +12,7 @@ topology:
     nokia_srlinux:
       image: ghcr.io/nokia/srlinux
     juniper_crpd:
-      image: crpd:20.2R1.10
+      image: ${CRPD_IMAGE:-crpd:24.2R1.14}
     linux:
       image: ghcr.io/hellt/network-multitool
 
@@ -20,25 +20,9 @@ topology:
     ceos-01:
       kind: arista_ceos
       mgmt-ipv4: 198.51.100.11
-      startup-config: startups/ceos-01.conf
-      publish:
-        - tcp/50051
-        - tcp/80
-        - tcp/443
-        - udp/161
-        - tcp/5900
     ceos-02:
       kind: arista_ceos
       mgmt-ipv4: 198.51.100.12
-      startup-config: startups/ceos-02.conf
-      publish:
-        - tcp/50051
-        - tcp/80
-        - tcp/443
-        - udp/161
-        - tcp/5900
-      # ports:
-      #   - 51161:161/udp
     crpd-01:
       kind: juniper_crpd
       mgmt-ipv4: 198.51.100.21
@@ -50,7 +34,7 @@ topology:
       mgmt-ipv4: 198.51.100.31
     srl-02:
       kind: nokia_srlinux
-      mgmt-ipv4: 198.51.100.31
+      mgmt-ipv4: 198.51.100.32
     client1:
       kind: linux
     client2:

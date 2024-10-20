@@ -114,6 +114,17 @@
       register: ceos_import
       changed_when: ceos_import.rc != 0
 
+    - name: Copy CRPD container image
+      ansible.builtin.copy:
+        src: "{{ lookup('ansible.builtin.env', 'CRPD_IMAGE_PATH') }}"
+        dest: /tmp/cRPD.tgz
+        mode: "0644"
+
+    - name: Laod CPRD container image
+      ansible.builtin.command: docker load -i /tmp/cRPD.tgz
+      register: crpd_load
+      changed_when: crpd_load.rc != 0
+
 #### Setup cookbook-lab-droplet
 - name: Setup labcli app
   hosts: cookbook-lab-droplet

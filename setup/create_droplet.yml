@@ -9,7 +9,7 @@
     - name: "droplet_image"
       prompt: "Enter the droplet image"
       private: false
-      default: "ubuntu-24-04-x64"
+      default: "ubuntu-22-04-x64"
 
     - name: "droplet_size"
       prompt: "Enter the droplet size"
@@ -33,7 +33,7 @@
         private_networking: true
         unique_name: true
         ssh_keys: "{{ lookup('ansible.builtin.env', 'DO_SSH_FINGERPRINT') }}"
-        project: "network-observability-lab"
+        project: "network-cookbook-lab"
         tags:
           - "cookbook-lab"
       register: droplet_result
