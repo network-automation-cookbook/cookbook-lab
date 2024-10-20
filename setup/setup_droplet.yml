@@ -114,6 +114,17 @@
       register: ceos_import
       changed_when: ceos_import.rc != 0
 
+    - name: Copy CRPD container image
+      ansible.builtin.copy:
+        src: "{{ lookup('ansible.builtin.env', 'CRPD_IMAGE_PATH') }}"
+        dest: /tmp/cRPD.tgz
+        mode: "0644"
+
+    - name: Laod CPRD container image
+      ansible.builtin.command: docker load -i /tmp/cRPD.tgz
+      register: crpd_load
+      changed_when: crpd_load.rc != 0
+
 #### Setup cookbook-lab-droplet
 - name: Setup labcli app
   hosts: cookbook-lab-droplet
@@ -157,9 +168,10 @@
       retries: 50
       delay: 10
 
-    - name: Initialize Nautobot data
-      ansible.builtin.shell:
-        cmd: "cd /root/cookbook-lab && labcli utils load-nautobot"
-        executable: /bin/bash
-      register: labcli_run
-      changed_when: labcli_run.rc != 0
+    # For now, we don't initialize Nautobot data
+    # - name: Initialize Nautobot data
+    #   ansible.builtin.shell:
+    #     cmd: "cd /root/cookbook-lab && labcli utils load-nautobot"
+    #     executable: /bin/bash
+    #   register: labcli_run
+    #   changed_when: labcli_run.rc != 0
