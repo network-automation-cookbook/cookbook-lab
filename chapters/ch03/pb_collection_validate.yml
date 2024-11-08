@@ -1,0 +1,9 @@
+---
+- name: "VALIDATE COLLECTION IS WORKING"
+  gather_facts: false
+  connection: "ansible.netcommon.network_cli"
+  hosts: "ceos-01"
+  tasks:
+    - name: "RUN A COMMAND ON ARISTA EOS"
+      arista.eos.eos_command:
+        commands: "show version"

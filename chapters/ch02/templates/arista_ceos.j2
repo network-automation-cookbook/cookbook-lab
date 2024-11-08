@@ -1,0 +1,12 @@
+{# ./templates/arista_ceos.j2 #}
+hostname {{ inventory_hostname }}
+!
+{% for server in ntp %}
+ntp {{ server }}
+{% endfor %}
+!
+
+{% for mgmt_int, int_details in interfaces['mgmt'].items() %}
+interface {{ mgmt_int }}
+    ip address {{ int_details['ip_addr'] | ansible.utils.ipaddr('address') }} {{ int_details['ip_addr'] | ansible.utils.ipaddr('netmask') }}
+{% endfor %}
