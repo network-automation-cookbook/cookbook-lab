@@ -1,0 +1,14 @@
+---
+- name: "DEBUG INVENTORY"
+  hosts: "all"
+  gather_facts: False
+  strategy: "host_pinned"
+  serial:
+    - 30%
+  tasks:
+    - name: "GET DEVICE NAMES"
+      debug:
+        msg: "{{ inventory_hostname }}"
+    - name: "GET DEVICE OS"
+      debug:
+        msg: "{{ ansible_network_os }}"
