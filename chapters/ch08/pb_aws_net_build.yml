@@ -14,7 +14,7 @@
       register: create_vpc
 
     # - name: Display the VPC output
-    #   debug:
+    #   ansible.builtin.debug:
     #     var: create_vpc
 
     - name: Set VPC ID
@@ -42,7 +42,7 @@
         - igw
 
     # - name: Display the IGW output
-    #   debug:
+    #   ansible.builtin.debug:
     #     var: vpc_igw_create
 
     - name: Extract VPC IGW ID
@@ -57,7 +57,7 @@
       register: vpc_route_table_facts
 
     # - name: Display the Route Table output
-    #   debug:
+    #   ansible.builtin.debug:
     #     var: vpc_route_table_facts
 
     - name: Extract Route Table IDs
