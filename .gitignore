@@ -1,6 +1,9 @@
 # Ansible Retry Files
 *.retry
 
+# Random Temps
+tmp/
+
 # Swap files
 *.swp
 

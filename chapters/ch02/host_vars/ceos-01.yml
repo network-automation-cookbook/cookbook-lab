@@ -1,0 +1,6 @@
+# host_vars/ceos-01.yml
+---
+interfaces:
+  mgmt:
+    Management0:
+      ip_addr: "198.51.100.11/24"

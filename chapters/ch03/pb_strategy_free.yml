@@ -1,0 +1,14 @@
+---
+- name: "DEBUG INVENTORY"
+  hosts: "all"
+  gather_facts: False
+  strategy: "free"
+  #connection: "ansible.netcommon.network_cli"
+  tasks:
+    - name: "GET DEVICE NAMES"
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}"
+
+    - name: "GET DEVICE OS"
+      ansible.builtin.debug:
+        msg: "{{ ansible_network_os }}"

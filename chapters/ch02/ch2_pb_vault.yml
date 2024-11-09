@@ -1,0 +1,12 @@
+# ch2_pb_vault.yml
+---
+- name: USING ANSIBLE VAULT
+  hosts: all
+  gather_facts: no
+  vars_files:
+    - secrets
+  tasks:
+    - name: DISPLAY SECURE DATA
+      ansible.builtin.debug:
+        msg: "OSPF Password for Router {{ inventory_hostname }} is {{ ospf_password }}"
+      when: inventory_hostname == 'ceos-01'
