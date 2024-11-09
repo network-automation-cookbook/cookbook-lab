@@ -7,7 +7,7 @@
     AWS_REGION: "{{ aws_region }}"
   tasks:
     - name: Get VPC facts
-      ec2_vpc_net_info:
+      aws.amazon.ec2_vpc_net_info:
         filters:
           "tag:Name": "{{ vpc_name }}"
       register: vpc_facts
@@ -19,26 +19,26 @@
     - name: Start Delete VPC Resources
       block:
         - name: Delete Subnets
-          ec2_vpc_subnet:
+          aws.amazon.ec2_vpc_subnet:
             cidr: "{{ item.value.cidr }}"
             vpc_id: "{{ vpc_id }}"
             state: absent
           with_dict: "{{ vpc_subnets }}"
 
         - name: Delete NACLs
-          ec2_vpc_nacl:
+          aws.amazon.ec2_vpc_nacl:
             name: "{{ item.name }}"
             vpc_id: "{{ vpc_id }}"
             state: absent
           loop: "{{ network_acls }}"
 
         - name: Delete IGW
-          ec2_vpc_igw:
+          aws.amazon.ec2_vpc_igw:
             vpc_id: "{{ vpc_id }}"
             state: absent
 
         - name: Delete VPC
-          ec2_vpc_net:
+          aws.amazon.ec2_vpc_net:
             cidr_block: "{{ vpc_cidr }}"
             name: "{{ vpc_name }}"
             state: absent

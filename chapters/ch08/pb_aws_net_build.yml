@@ -5,7 +5,7 @@
     AWS_SECRET_KEY: "{{ aws_secret_key_id }}"
   tasks:
     - name: Create new VPC
-      ec2_vpc_net:
+      aws.amazon.ec2_vpc_net:
         cidr_block: "{{ vpc_cidr }}"
         region: "{{ aws_region }}"
         name: "{{ vpc_name }}"
@@ -22,7 +22,7 @@
         vpc_id: "{{ create_vpc.vpc.id }}"
 
     - name: Create VPC subnets
-      ec2_vpc_subnet:
+      aws.amazon.ec2_vpc_subnet:
         region: "{{ aws_region }}"
         vpc_id: "{{ vpc_id }}"
         cidr: "{{ item.value.cidr }}"
@@ -32,7 +32,7 @@
       register: create_vpc_subnets
 
     - name: Create IGW
-      ec2_vpc_igw:
+      aws.amazon.ec2_vpc_igw:
         region: "{{ aws_region }}"
         vpc_id: "{{ vpc_id }}"
         state: present
@@ -50,7 +50,7 @@
         igw_id: "{{ vpc_igw_create.gateway_id }}"
 
     - name: Get Default VPC Route Table
-      ec2_vpc_route_table_info:
+      aws.amazon.ec2_vpc_route_table_info:
         region: "{{ aws_region }}"
         filters:
           vpc-id: "{{ vpc_id }}"
@@ -65,7 +65,7 @@
         rt_id: "{{vpc_route_table_facts.route_tables[0].id }}"
 
     - name: Update Default VPC Route Table
-      ec2_vpc_route_table :
+      aws.amazon.ec2_vpc_route_table :
         region: "{{ aws_region }}"
         vpc_id: "{{ vpc_id }}"
         route_table_id: "{{ rt_id }}"
@@ -76,7 +76,7 @@
         tags: "{{ vpc_tags | combine(route_table.tags) }}"
 
     - name: Create Network ACLs
-      ec2_vpc_nacl:
+      aws.amazon.ec2_vpc_nacl:
         region: "{{ aws_region }}"
         vpc_id: "{{ vpc_id }}"
         name: "{{ item.name }}"

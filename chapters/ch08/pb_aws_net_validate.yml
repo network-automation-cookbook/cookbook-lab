@@ -7,7 +7,7 @@
     AWS_REGION: "{{ aws_region }}"
   tasks:
     - name: Get VPC info
-      ec2_vpc_net_info:
+      aws.amazon.ec2_vpc_net_info:
         filters:
           "tag:Name": "{{ vpc_name }}"
       register: vpc_facts
@@ -24,7 +24,7 @@
             vpc_id: "{{ vpc_facts.vpcs[0].id }}"
 
         - name: Get Subnet info
-          ec2_vpc_subnet_info:
+          aws.amazon.ec2_vpc_subnet_info:
             filters:
               vpc-id: "{{ vpc_id }}"
           register: vpc_subnet_facts
