@@ -1,6 +1,5 @@
-# ch2_pb2.yml
 ---
-- name: Initial Playbook
+- name: Debug with Conditionals
   hosts: all
   gather_facts: no
   tasks:
@@ -12,3 +11,4 @@
       ansible.builtin.debug:
         msg: "{{ inventory_hostname }} has NTP servers {{ ntp }}"
       when: inventory_hostname in groups["network_equipment"]
+

@@ -1,13 +1,8 @@
-# ch2_pb_loops.yml
 ---
 - name: LOOP THROUGH A LIST AND PRINT
   hosts: arista_ceos
   gather_facts: no
   tasks:
-    - name: DISPLAY ALL NTP SERVERS
-      ansible.builtin.debug:
-        msg: "Router {{ inventory_hostname }} with ntp server {{ item }}"
-      loop: "{{ ntp }}"
     - name: DISPLAY ALL NTP SERVERS LOOP_VAR
       ansible.builtin.debug:
         msg: "Router {{ inventory_hostname }} with ntp server {{ ntp_server }}"
