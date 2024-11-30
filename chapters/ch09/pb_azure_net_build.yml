@@ -1,0 +1,112 @@
+---
+- name: Build Azure Network Infrastructure
+  hosts: all
+  connection: local
+  gather_facts: no
+  vars_files:
+    - azure_secrets.yml
+  tasks:
+    - name: Create Resource Group
+      azure.azcollection.azure_rm_resourcegroup:
+        tenant: "{{ tenant_id }}"
+        client_id: "{{ client_id }}"
+        secret: "{{ secret }}"
+        location: "{{ region }}"
+        subscription_id: "{{ subscription_id }}"
+        name: "{{ resource_group_name }}"
+        state: "{{ state | default('present') }}"
+
+    - name: Create Azure Virtual Networks
+      azure.azcollection.azure_rm_virtualnetwork:
+        tenant: "{{ tenant_id }}"
+        client_id: "{{ client_id }}"
+        secret: "{{ secret }}"
+        location: "{{ region }}"
+        subscription_id: "{{ subscription_id }}"
+        resource_group: "{{ resource_group_name}}"
+        name: "{{ vnet_name }}"
+        address_prefixes_cidr: "{{ vnet_cidr }}"
+        state: "{{ state | default('present') }}"
+
+    - name: Create Azure Subnets
+      azure.azcollection.azure_rm_subnet:
+        tenant: "{{ tenant_id }}"
+        client_id: "{{ client_id }}"
+        secret: "{{ secret }}"
+        subscription_id: "{{ subscription_id }}"
+        resource_group: "{{ resource_group_name}}"
+        name: "{{ item.name}}"
+        virtual_network_name:  "{{ vnet_name }}"
+        address_prefix_cidr: "{{ item.cidr }}"
+        state: "{{ state | default('present') }}"
+      loop: "{{ subnets }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Create Azure Custom Route Table
+      azure.azcollection.azure_rm_routetable:
+        tenant: "{{ tenant_id }}"
+        client_id: "{{ client_id }}"
+        secret: "{{ secret }}"
+        subscription_id: "{{ subscription_id }}"
+        resource_group: "{{ resource_group_name}}"
+        name: "{{ item.name}}"
+        state: "{{ state | default('present') }}"
+      loop: "{{ route_tables }}"
+
+    - name: Provision Routes
+      azure.azcollection.azure_rm_route:
+        tenant: "{{ tenant_id }}"
+        client_id: "{{ client_id }}"
+        secret: "{{ secret }}"
+        subscription_id: "{{ subscription_id }}"
+        resource_group: "{{ resource_group_name}}"
+        route_table_name: "{{ item.0.name }}"
+        name: "{{ item.1.name}}"
+        address_prefix: "{{ item.1.prefix }}"
+        next_hop_type: "{{ item.1.nh }}"
+        state: "{{ state | default('present') }}"
+      with_subelements:
+        - "{{ route_tables }}"
+        - routes
+
+    - name: Attach Route Table to Subnet
+      azure.azcollection.azure_rm_subnet:
+        tenant: "{{ tenant_id }}"
+        client_id: "{{ client_id }}"
+        secret: "{{ secret }}"
+        subscription_id: "{{ subscription_id }}"
+        resource_group: "{{ resource_group_name}}"
+        name: "{{ item.subnet}}"
+        virtual_network_name:  "{{ vnet_name }}"
+        route_table: "{{ item.name }}"
+        state: "{{ state | default('present') }}"
+      loop: "{{ route_tables }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Create Network Security Group
+      azure.azcollection.azure_rm_securitygroup:
+        tenant: "{{ tenant_id }}"
+        client_id: "{{ client_id }}"
+        secret: "{{ secret }}"
+        subscription_id: "{{ subscription_id }}"
+        resource_group: "{{ resource_group_name}}"
+        name: "{{ item.name }}"
+        purge_rules: yes
+        rules: "{{ item.rules }}"
+      loop: "{{ acls }}"
+      # register: output_sg_create
+
+    - name: Attach Network Security Group to Subnet
+      azure.azcollection.azure_rm_subnet:
+        tenant: "{{ tenant_id }}"
+        client_id: "{{ client_id }}"
+        secret: "{{ secret }}"
+        subscription_id: "{{ subscription_id }}"
+        resource_group: "{{ resource_group_name}}"
+        name: "{{ item.subnet}}"
+        virtual_network_name:  "{{ vnet_name }}"
+        security_group: "{{ item.name }}"
+        state: "{{ state | default('present') }}"
+      loop: "{{ acls }}"

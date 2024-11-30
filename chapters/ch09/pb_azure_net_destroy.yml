@@ -1,0 +1,18 @@
+---
+- name: Decomission Azure Infrastructure
+  hosts: all
+  connection: local
+  gather_facts: no
+  vars_files:
+    - azure_secrets.yml
+  tasks:
+    - name: Delete Resource group
+      azure.azcollection.azure_rm_resourcegroup:
+        tenant: "{{ tenant_id }}"
+        client_id: "{{ client_id }}"
+        secret: "{{ secret }}"
+        location: "{{ region }}"
+        subscription_id: "{{ subscription_id }}"
+        name: "{{ resource_group_name }}"
+        force_delete_nonempty: yes
+        state: absent

@@ -1,0 +1,88 @@
+- name: Create all AWS Networks
+  hosts: prod_vpcs
+  environment:
+    AWS_ACCESS_KEY: "{{ aws_access_key }}"
+    AWS_SECRET_KEY: "{{ aws_secret_key_id }}"
+  tasks:
+    - name: Create new VPC
+      aws.amazon.ec2_vpc_net:
+        cidr_block: "{{ vpc_cidr }}"
+        region: "{{ aws_region }}"
+        name: "{{ vpc_name }}"
+        state: "{{ vpc_state | default('present') }}"
+        tags: "{{ vpc_tags }}"
+      register: create_vpc
+
+    # - name: Display the VPC output
+    #   ansible.builtin.debug:
+    #     var: create_vpc
+
+    - name: Set VPC ID
+      set_fact:
+        vpc_id: "{{ create_vpc.vpc.id }}"
+
+    - name: Create VPC subnets
+      aws.amazon.ec2_vpc_subnet:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ vpc_id }}"
+        cidr: "{{ item.value.cidr }}"
+        az: "{{ item.value.az }}"
+        tags: "{{item.value.tags | combine({ 'Name': item.key })}}"
+      with_dict: "{{ vpc_subnets }}"
+      register: create_vpc_subnets
+
+    - name: Create IGW
+      aws.amazon.ec2_vpc_igw:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ vpc_id }}"
+        state: present
+        tags: "{{ vpc_tags | combine({'Name': igw_name}) }}"
+      register: vpc_igw_create
+      tags:
+        - igw
+
+    # - name: Display the IGW output
+    #   ansible.builtin.debug:
+    #     var: vpc_igw_create
+
+    - name: Extract VPC IGW ID
+      set_fact:
+        igw_id: "{{ vpc_igw_create.gateway_id }}"
+
+    - name: Get Default VPC Route Table
+      aws.amazon.ec2_vpc_route_table_info:
+        region: "{{ aws_region }}"
+        filters:
+          vpc-id: "{{ vpc_id }}"
+      register: vpc_route_table_facts
+
+    # - name: Display the Route Table output
+    #   ansible.builtin.debug:
+    #     var: vpc_route_table_facts
+
+    - name: Extract Route Table IDs
+      set_fact:
+        rt_id: "{{vpc_route_table_facts.route_tables[0].id }}"
+
+    - name: Update Default VPC Route Table
+      aws.amazon.ec2_vpc_route_table :
+        region: "{{ aws_region }}"
+        vpc_id: "{{ vpc_id }}"
+        route_table_id: "{{ rt_id }}"
+        routes: "{{ route_table.routes }}"
+        subnets: "{{ route_table.subnets }}"
+        lookup: id
+        state: present
+        tags: "{{ vpc_tags | combine(route_table.tags) }}"
+
+    - name: Create Network ACLs
+      aws.amazon.ec2_vpc_nacl:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ vpc_id }}"
+        name: "{{ item.name }}"
+        subnets: "{{ item.subnets }}"
+        ingress: "{{ item.ingress_rules }}"
+        egress: "{{ item.egress_rules }}"
+        tags: "{{ vpc_tags | combine({'Name':item.name}) }}"
+      loop: "{{ network_acls }}"
+      tags: nacl

@@ -1,0 +1,7 @@
+[us]
+  us_prod_vpc
+[eu]
+  eu_prod_vpc
+[prod_vpcs]
+  us_prod_vpc
+  eu_prod_vpc
