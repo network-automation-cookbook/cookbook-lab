@@ -1,5 +1,5 @@
 ---
-- name: "DEBUG INVENTORY"
+- name: "DEMONSTRATE HOSTPIN STRATEGY"
   hosts: "all"
   gather_facts: False
   strategy: "host_pinned"

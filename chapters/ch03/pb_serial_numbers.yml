@@ -1,5 +1,5 @@
 ---
-- name: "DEBUG INVENTORY"
+- name: "DEMONSTRATE SERIAL NUMBERS"
   hosts: "all"
   gather_facts: False
   serial:

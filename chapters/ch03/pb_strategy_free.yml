@@ -1,9 +1,8 @@
 ---
-- name: "DEBUG INVENTORY"
+- name: "DEMONSTRATE FREE STRATEGY"
   hosts: "all"
   gather_facts: False
   strategy: "free"
-  #connection: "ansible.netcommon.network_cli"
   tasks:
     - name: "GET DEVICE NAMES"
       ansible.builtin.debug:
