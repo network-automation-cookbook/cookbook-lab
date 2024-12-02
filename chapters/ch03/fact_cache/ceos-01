@@ -7,10 +7,10 @@ ansible_net_filesystems: []
 ansible_net_fqdn: ceos-01
 ansible_net_gather_network_resources: []
 ansible_net_gather_subset:
-- config
 - hardware
-- interfaces
 - default
+- interfaces
+- config
 ansible_net_hostname: ceos-01
 ansible_net_interfaces:
   Ethernet1:
@@ -19,7 +19,7 @@ ansible_net_interfaces:
     duplex: duplexFull
     ipv4: {}
     lineprotocol: up
-    macaddress: aa:c1:ab:ff:58:d6
+    macaddress: aa:c1:ab:c5:a8:c3
     mtu: 9214
     operstatus: connected
     type: bridged
@@ -29,7 +29,7 @@ ansible_net_interfaces:
     duplex: duplexFull
     ipv4: {}
     lineprotocol: up
-    macaddress: aa:c1:ab:72:42:a7
+    macaddress: aa:c1:ab:bf:14:5f
     mtu: 9214
     operstatus: connected
     type: bridged
@@ -39,7 +39,7 @@ ansible_net_interfaces:
     duplex: duplexFull
     ipv4: {}
     lineprotocol: up
-    macaddress: aa:c1:ab:0d:64:eb
+    macaddress: aa:c1:ab:e8:d2:c2
     mtu: 9214
     operstatus: connected
     type: bridged
@@ -55,8 +55,8 @@ ansible_net_interfaces:
     mtu: 1500
     operstatus: connected
     type: routed
-ansible_net_memfree_mb: 703.0078125
-ansible_net_memtotal_mb: 7937.42578125
+ansible_net_memfree_mb: 562.2734375
+ansible_net_memtotal_mb: 7937.421875
 ansible_net_model: cEOSLab
 ansible_net_neighbors:
   Ethernet1:
@@ -69,7 +69,7 @@ ansible_net_neighbors:
   - host: ceos-02
     port: Management0
 ansible_net_python_version: 3.12.7
-ansible_net_serialnum: 91D0D5FE4238E93E1626790BC6EEA561
+ansible_net_serialnum: 2BAC0DC6269392CBD62B72ED3F3DBBA5
 ansible_net_system: eos
 ansible_net_version: 4.30.1F-32308478.4301F (engineering build)
 ansible_network_resources: {}

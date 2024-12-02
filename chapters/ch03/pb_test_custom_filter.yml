@@ -1,0 +1,14 @@
+---
+- name: "Test Custom Filter"
+  hosts: "all"
+  connection: "local"
+  tasks:
+    - name: "Read ACL data"
+      ansible.builtin.include_vars: "ACLs.yml"
+      run_once: yes
+    - name: "Apply Our Custom Filter"
+      ansible.builtin.set_fact:
+        standard_acl: "{{ ACLs | acl_state }}"
+      run_once: yes
+    - name: "Display Output After Filter"
+      ansible.builtin.debug: "var=standard_acl"

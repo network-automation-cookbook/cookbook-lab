@@ -1,13 +1,13 @@
 ---
-- name: Collect Network Facts
-  hosts: all
+- name: "Collect Network Facts"
+  hosts: "arista_ceos"
   vars_files:
-    - secrets
+    - "secrets"
   tasks:
-    - name: Collect Facts from EOS
+    - name: "Collect Facts from EOS"
       arista.eos.eos_facts:
-        gather_subset: all
-    - name: Set and Cache Custom Fact
+        gather_subset: "all"
+    - name: "Set and Cache Custom Fact"
       ansible.builtin.set_fact:
-        site: Egypt
+        site: "Egypt"
         cacheable: yes

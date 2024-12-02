@@ -4,12 +4,11 @@
   hosts: "all"
   tasks:
     - name: "Validate all Interfaces"
-      assert:
+      ansible.builtin.assert:
         that:
           - item.value.lineprotocol == "up"
       loop: "{{ ansible_net_interfaces | dict2items }}"
     - name: "Validate Custom Fact"
-      assert:
+      ansible.builtin.assert:
         that:
-          - site == 'Egypt'
-
+          - site == "Egypt"
