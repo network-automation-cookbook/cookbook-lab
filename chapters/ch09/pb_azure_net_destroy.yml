@@ -1,5 +1,5 @@
 ---
-- name: Decomission Azure Infrastructure
+- name: Decommission Azure Infrastructure
   hosts: all
   connection: local
   gather_facts: no

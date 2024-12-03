@@ -10,7 +10,7 @@
       register: azure_resourcegroups
 
     - name: Validate Resource Group is Deployed
-      assert:
+      ansible.builtin.assert:
         that:
           - rg.name == resource_group_name
           - rg.properties.provisioning_state == 'Succeeded'
@@ -25,7 +25,7 @@
       register: azure_virtualnetworks
 
     - name: Validate Virtual Networks are Deployed
-      assert:
+      ansible.builtin.assert:
         that:
           - vnet.name == vnet_name
           - vnet.provisioning_state == 'Succeeded'
