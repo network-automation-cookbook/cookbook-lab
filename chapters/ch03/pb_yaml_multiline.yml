@@ -1,5 +1,5 @@
 ---
-- name: "Explore Advanced YAML Mechanisms"
+- name: "EExplore YAML Multiline Strings"
   hosts: "localhost"
   tasks:
     - name: "Debug Literal Block"
