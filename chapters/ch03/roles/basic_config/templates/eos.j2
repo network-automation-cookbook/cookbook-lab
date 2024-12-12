@@ -1,0 +1,5 @@
+hostname {{ inventory_hostname }}
+!
+{% for server in ntp_servers %}
+ntp {{ server }}
+{% endfor %}

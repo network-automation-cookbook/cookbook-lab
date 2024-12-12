@@ -1,0 +1,10 @@
+---
+- name: BUILD BASIC CONFIG USING ROLES
+  hosts: arista_ceos
+  connection: local
+  vars:
+    ntp_servers:
+      - 8.8.8.8
+      - 8.8.4.4
+  roles:
+    - basic_config
