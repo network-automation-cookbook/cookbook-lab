@@ -5,24 +5,28 @@
   gather_facts: no
   vars_files:
     - azure_secrets.yml
+  vars:
+    credentials: &azure_credentials
+      tenant: "{{ tenant_id }}"
+      client_id: "{{ client_id }}"
+      secret: "{{ secret }}"
+      subscription_id: "{{ subscription_id }}"
+
   tasks:
     - name: Create Resource Group
       azure.azcollection.azure_rm_resourcegroup:
         tenant: "{{ tenant_id }}"
         client_id: "{{ client_id }}"
         secret: "{{ secret }}"
-        location: "{{ region }}"
         subscription_id: "{{ subscription_id }}"
+        location: "{{ region }}"
         name: "{{ resource_group_name }}"
         state: "{{ state | default('present') }}"
 
     - name: Create Azure Virtual Networks
       azure.azcollection.azure_rm_virtualnetwork:
-        tenant: "{{ tenant_id }}"
-        client_id: "{{ client_id }}"
-        secret: "{{ secret }}"
+        <<: *azure_credentials
         location: "{{ region }}"
-        subscription_id: "{{ subscription_id }}"
         resource_group: "{{ resource_group_name}}"
         name: "{{ vnet_name }}"
         address_prefixes_cidr: "{{ vnet_cidr }}"
@@ -30,10 +34,7 @@
 
     - name: Create Azure Subnets
       azure.azcollection.azure_rm_subnet:
-        tenant: "{{ tenant_id }}"
-        client_id: "{{ client_id }}"
-        secret: "{{ secret }}"
-        subscription_id: "{{ subscription_id }}"
+        <<: *azure_credentials
         resource_group: "{{ resource_group_name}}"
         name: "{{ item.name}}"
         virtual_network_name:  "{{ vnet_name }}"
@@ -45,10 +46,7 @@
 
     - name: Create Azure Custom Route Table
       azure.azcollection.azure_rm_routetable:
-        tenant: "{{ tenant_id }}"
-        client_id: "{{ client_id }}"
-        secret: "{{ secret }}"
-        subscription_id: "{{ subscription_id }}"
+        <<: *azure_credentials
         resource_group: "{{ resource_group_name}}"
         name: "{{ item.name}}"
         state: "{{ state | default('present') }}"
@@ -56,10 +54,7 @@
 
     - name: Provision Routes
       azure.azcollection.azure_rm_route:
-        tenant: "{{ tenant_id }}"
-        client_id: "{{ client_id }}"
-        secret: "{{ secret }}"
-        subscription_id: "{{ subscription_id }}"
+        <<: *azure_credentials
         resource_group: "{{ resource_group_name}}"
         route_table_name: "{{ item.0.name }}"
         name: "{{ item.1.name}}"
@@ -72,10 +67,7 @@
 
     - name: Attach Route Table to Subnet
       azure.azcollection.azure_rm_subnet:
-        tenant: "{{ tenant_id }}"
-        client_id: "{{ client_id }}"
-        secret: "{{ secret }}"
-        subscription_id: "{{ subscription_id }}"
+        <<: *azure_credentials
         resource_group: "{{ resource_group_name}}"
         name: "{{ item.subnet}}"
         virtual_network_name:  "{{ vnet_name }}"
@@ -87,10 +79,7 @@
 
     - name: Create Network Security Group
       azure.azcollection.azure_rm_securitygroup:
-        tenant: "{{ tenant_id }}"
-        client_id: "{{ client_id }}"
-        secret: "{{ secret }}"
-        subscription_id: "{{ subscription_id }}"
+        <<: *azure_credentials
         resource_group: "{{ resource_group_name}}"
         name: "{{ item.name }}"
         purge_rules: yes
@@ -100,10 +89,7 @@
 
     - name: Attach Network Security Group to Subnet
       azure.azcollection.azure_rm_subnet:
-        tenant: "{{ tenant_id }}"
-        client_id: "{{ client_id }}"
-        secret: "{{ secret }}"
-        subscription_id: "{{ subscription_id }}"
+        <<: *azure_credentials
         resource_group: "{{ resource_group_name}}"
         name: "{{ item.subnet}}"
         virtual_network_name:  "{{ vnet_name }}"
