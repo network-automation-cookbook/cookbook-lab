@@ -1,0 +1,15 @@
+---
+- name: "DEMONSTRATE SERIAL NUMBERS"
+  hosts: "all"
+  gather_facts: False
+  serial:
+    - 1
+    - 2
+    - 5
+  tasks:
+    - name: "GET DEVICE NAMES"
+      debug:
+        msg: "{{ inventory_hostname }}"
+    - name: "GET DEVICE OS"
+      debug:
+        msg: "{{ ansible_network_os }}"

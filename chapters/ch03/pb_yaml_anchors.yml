@@ -1,0 +1,15 @@
+---
+- name: "Explore YAML Anchors"
+  hosts: "localhost"
+  vars:
+    &example_anchor
+      msg: "Demonstrating reusing a variable as an anchor."
+      verbosity: 0
+  tasks:
+    - name: "Default Anchor Message and Verbosity"
+      ansible.builtin.debug:
+        <<: *example_anchor
+    - name: "Overloaded Anchor Message with Default Verbosity"
+      ansible.builtin.debug:
+        <<: *example_anchor
+        msg: "Demonstrating OVERLOADED msg argument from anchor."

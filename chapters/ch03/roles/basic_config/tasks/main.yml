@@ -1,0 +1,10 @@
+---
+- name: CREATE CONFIGS DIRECTORY
+  ansible.builtin.file:
+    path: "{{ config_dir }}"
+    state: directory
+  run_once: yes
+- name: GENERATE ARISTA BASIC CONFIG
+  ansible.builtin.template:
+    src: "{{ ansible_network_os | split('.') | last }}.j2"
+    dest: "{{ config_dir }}/{{ inventory_hostname }}.cfg"

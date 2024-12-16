@@ -1,0 +1,76 @@
+ansible_net_all_ipv4_addresses:
+- 198.51.100.11
+ansible_net_all_ipv6_addresses: []
+ansible_net_api: cliconf
+ansible_net_config: "show running-config\r\n% Invalid input (privileged mode required)\r\nceos-01>"
+ansible_net_filesystems: []
+ansible_net_fqdn: ceos-01
+ansible_net_gather_network_resources: []
+ansible_net_gather_subset:
+- hardware
+- default
+- interfaces
+- config
+ansible_net_hostname: ceos-01
+ansible_net_interfaces:
+  Ethernet1:
+    bandwidth: 1000000000
+    description: ''
+    duplex: duplexFull
+    ipv4: {}
+    lineprotocol: up
+    macaddress: aa:c1:ab:c5:a8:c3
+    mtu: 9214
+    operstatus: connected
+    type: bridged
+  Ethernet2:
+    bandwidth: 1000000000
+    description: ''
+    duplex: duplexFull
+    ipv4: {}
+    lineprotocol: up
+    macaddress: aa:c1:ab:bf:14:5f
+    mtu: 9214
+    operstatus: connected
+    type: bridged
+  Ethernet3:
+    bandwidth: 1000000000
+    description: ''
+    duplex: duplexFull
+    ipv4: {}
+    lineprotocol: up
+    macaddress: aa:c1:ab:e8:d2:c2
+    mtu: 9214
+    operstatus: connected
+    type: bridged
+  Management0:
+    bandwidth: 1000000000
+    description: ''
+    duplex: duplexFull
+    ipv4:
+      address: 198.51.100.11
+      masklen: 24
+    lineprotocol: up
+    macaddress: 02:42:c6:33:64:0b
+    mtu: 1500
+    operstatus: connected
+    type: routed
+ansible_net_memfree_mb: 562.2734375
+ansible_net_memtotal_mb: 7937.421875
+ansible_net_model: cEOSLab
+ansible_net_neighbors:
+  Ethernet1:
+  - host: ceos-02
+    port: Ethernet1
+  Ethernet2:
+  - host: ceos-02
+    port: Ethernet2
+  Management0:
+  - host: ceos-02
+    port: Management0
+ansible_net_python_version: 3.12.7
+ansible_net_serialnum: 2BAC0DC6269392CBD62B72ED3F3DBBA5
+ansible_net_system: eos
+ansible_net_version: 4.30.1F-32308478.4301F (engineering build)
+ansible_network_resources: {}
+site: Egypt

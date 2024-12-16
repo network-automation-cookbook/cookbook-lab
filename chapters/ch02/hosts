@@ -1,0 +1,12 @@
+[linux]
+client1 ansible_host=198.51.100.2
+client2 ansible_host=198.51.100.3
+[arista_ceos]
+ceos-01 ansible_host=198.51.100.11
+ceos-02 ansible_host=198.51.100.12
+[juniper_crpd]
+crpd-01 ansible_host=198.51.100.21
+crpd-02 ansible_host=198.51.100.22
+[nokia_srlinux]
+srl-01 ansible_host=198.51.100.31
+srl-02 ansible_host=198.51.100.32
