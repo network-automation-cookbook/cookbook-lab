@@ -317,3 +317,7 @@ local
 
 # Dev Containers
 .devcontainer/dev
+
+
+# Secrets
+*gcp-ansible-secret.json

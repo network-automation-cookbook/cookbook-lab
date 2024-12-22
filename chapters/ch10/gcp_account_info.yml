@@ -1,0 +1,4 @@
+---
+service_account_file: gcp-ansible-secret-decrypted.json
+project: gcp-automation-demo
+auth_kind: serviceaccount
