@@ -1,0 +1,92 @@
+---
+- name: Decommission GCP Resources
+  hosts: all
+  connection: local
+  gather_facts: no
+  force_handlers: True
+  environment:
+    GCP_SERVICE_ACCOUNT_FILE: "{{ service_account_file }}"
+    GCP_AUTH_KIND: 'serviceaccount'
+  vars_files:
+    - gcp_account_info.yml
+
+  tasks:
+    - name: Read the Vault Encrypted JSON File
+      ansible.builtin.copy:
+        content: "{{ lookup('file','gcp-ansible-secret.json') }}"
+        dest: "{{ service_account_file }}"
+      notify: Clean tmp Decrypted Files
+
+    - name: Get VPC Info
+      google.cloud.gcp_compute_network_info:
+        project: "{{ project }}"
+      register: gcp_vpc
+
+    - name: Delete Instances
+      google.cloud.gcp_compute_instance:
+        name: "{{ node.name | regex_replace('_','-') }}"
+        zone: "{{ node.zone }}"
+        project: "{{ project }}"
+        state: absent
+      loop: "{{ compute_nodes }}"
+      loop_control:
+        loop_var: node
+        label: "{{node.name}}"
+
+    - name: Delete disks for Instances
+      google.cloud.gcp_compute_disk:
+        name: "{{ node.name | regex_replace('_','-') }}-disk"
+        zone: "{{ node.zone }}"
+        project: "{{ project }}"
+        state: absent
+      loop: "{{ compute_nodes }}"
+      loop_control:
+        loop_var: node
+        label: "{{node.name}}"
+
+    - name: Delete All Firewall Rules
+      google.cloud.gcp_compute_firewall:
+        name: "{{ rule.name | regex_replace('_','-') }}"
+        network: "{{ gcp_vpc }}"
+        project: "{{ project }}"
+        state: absent
+      loop: "{{ fw_rules }}"
+      loop_control:
+        loop_var: rule
+
+    - name: Delete all Routes
+      google.cloud.gcp_compute_route:
+        name: "{{ route.name }}"
+        dest_range: "{{ route.dest}}"
+        network: "{{ gcp_vpc }}"
+        project: "{{ project }}"
+        state: absent
+      loop: "{{ custom_routes }}"
+      loop_control:
+        loop_var: route
+      when:
+      - custom_routes is defined
+
+    - name: Delete GCP Subnets
+      google.cloud.gcp_compute_subnetwork:
+        name: "{{ subnet.name }}"
+        ip_cidr_range: "{{ subnet.cidr }}"
+        network: "{{ gcp_vpc }}"
+        region: "{{ region }}"
+        project: "{{ project }}"
+        state: absent
+      loop: "{{ subnets }}"
+      loop_control:
+        loop_var: subnet
+
+    - name: Delete GCP VPC
+      google.cloud.gcp_compute_network:
+        name: "{{ vpc_name | regex_replace('_','-') }}"
+        project: "{{ project }}"
+        state: absent
+
+  handlers:
+    - name: Clean tmp Decrypted Files
+      ansible.builtin.file:
+        path: "{{ service_account_file }}"
+        state: absent

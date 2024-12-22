@@ -1,0 +1,89 @@
+---
+vpc_name: ansible-demo-vpc
+
+region: us-central1
+
+subnets:
+  - name: usc-web
+    cidr: 192.0.1.0/24
+  - name: usc-db
+    cidr: 192.0.2.0/24
+  - name: usc-bastion
+    cidr: 192.0.3.0/24
+
+fw_rules:
+  - name: allow_sql_from_usc-web_to_usc-db
+    type: allow
+    direction: ingress
+    priority: 10
+    apply_to: usc-db
+    src_tag: usc-web
+    dest_tag:
+    protocol: tcp
+    port: 3389
+    state: present
+  - name: allow_internet_to-usc-web
+    type: allow
+    direction: ingress
+    priority: 10
+    src: 0.0.0.0/0
+    apply_to: usc-web
+    protocol: tcp
+    port: 80,443
+    state: present
+  - name: allow_ssh_to_usc-bastion
+    type: allow
+    direction: ingress
+    priority: 10
+    src: 0.0.0.0/0
+    apply_to: usc-bastion
+    protocol: tcp
+    port: 22
+    state: present
+  - name: allow_ssh_from_bastion_only
+    type: allow
+    direction: ingress
+    priority: 10
+    src_tag: usc-bastion
+    apply_to: usc-web,usc-db
+    protocol: tcp
+    port: 22
+    state: present
+
+compute_node_flavor: f1-micro
+compute_node_images: projects/ubuntu-os-cloud/global/images/family/ubuntu-2204-lts
+compute_node_image_size: 10  # This number is in Gigabyte
+compute_nodes:
+  - name: web-server-1
+    network: usc-web
+    has_internet: yes
+    zone: us-central1-a
+
+  - name: web-server-2
+    network: usc-web
+    has_internet: yes
+    zone: us-central1-b
+
+  - name: db-server-1
+    network: usc-db
+    has_internet: no
+    zone: us-central1-a
+
+  - name: db-server-2
+    network: usc-db
+    has_internet: no
+    zone: us-central1-b
+
+  - name: bastion-host
+    network: usc-bastion
+    ip: 192.0.3.253
+    has_internet: yes
+    ip_forwarding: yes
+    zone: us-central1-a
+
+custom_routes:
+  - name: default-route-db
+    description: Default Route for DB nodes
+    dest: '0.0.0.0/0'
+    nh: '192.0.3.253'
+    apply_to: usc-db

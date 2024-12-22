@@ -1,0 +1,54 @@
+---
+# tasks file for gcp_net_build
+- name: Create a New GCP VPC
+  google.cloud.gcp_compute_network:
+    name: "{{ vpc_name | regex_replace('_','-') }}"
+    routing_config:
+        routing_mode: "REGIONAL"
+    auto_create_subnetworks: no
+    state: present
+    auth_kind: "{{ auth_kind }}"
+    project: "{{ project }}"
+    service_account_file: "{{ service_account_file }}"
+  register: gcp_vpc
+
+# - name: "Check GCP VPC"
+#   debug:
+#     var: gcp_vpc
+
+- name: Create Subnets
+  google.cloud.gcp_compute_subnetwork:
+    name: "{{ subnet.name }}"
+    ip_cidr_range: "{{ subnet.cidr }}"
+    network: "{{ gcp_vpc}}"
+    region: "{{ region }}"
+    state: present
+    auth_kind: "{{ auth_kind }}"
+    project: "{{ project }}"
+    service_account_file: "{{ service_account_file }}"
+  loop: "{{ subnets }}"
+  loop_control:
+    loop_var: subnet
+    label: "{{ subnet.cidr }}"
+  register: gcp_subnets
+
+- name: Create Allow Firewall Rules
+  google.cloud.gcp_compute_firewall:
+    name: "{{ rule.name | regex_replace('_','-') }}"
+    network: {selfLink: "{{ gcp_vpc.selfLink }}"}
+    priority: "{{ rule.priority | default(omit) }}"
+    direction: "{{ rule.direction | upper | mandatory }}"
+    allowed:
+      - ip_protocol: "{{ rule.protocol }}"
+        ports: "{{ (rule.port|string).split(',') }}"
+    source_ranges: "{{ rule.src | default(omit) }}"
+    source_tags: "{{ omit if rule.src_tag is not defined else rule.src_tag.split(',') }}"
+    destination_ranges: "{{ rule.dest | default(omit) }}"
+    target_tags: "{{ omit if rule.apply_to is not defined else rule.apply_to.split(',') }}"
+    auth_kind: "{{ auth_kind }}"
+    project: "{{ project }}"
+    service_account_file: "{{ service_account_file }}"
+  loop: "{{ fw_rules | selectattr('type','equalto','allow') | list }}"
+  loop_control:
+    loop_var: rule
+    label: "{{ rule.name }}"
