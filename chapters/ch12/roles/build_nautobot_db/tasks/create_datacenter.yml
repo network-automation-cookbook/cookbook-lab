@@ -1,0 +1,187 @@
+
+- name: Create Location Types within Nautobot
+  networktocode.nautobot.location_type:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    name: "{{ item | lower }}"
+    state: "{{ nautobot_state }}"
+    content_types:
+      - "dcim.device"
+      - "ipam.prefix"
+  loop: "{{ locations | map(attribute='location_type') | unique | list }}"
+  when: locations is defined
+  run_once: yes
+
+- name: Create Locations within Nautobot
+  networktocode.nautobot.location:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    name: "{{ item.name | lower }}"
+    description: "{{ item.description | default(omit) }}"
+    physical_address: "{{ item.address | default(omit) }}"
+    state: "{{ nautobot_state }}"
+    status: "Planned"
+    location_type:
+      name: "{{ item.location_type }}"
+  loop: "{{ locations }}"
+  when: locations is defined
+  run_once: yes
+
+- name: Create Manufacturers within Nautobot
+  networktocode.nautobot.manufacturer:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    name: "{{ item | lower }}"
+    state: "{{ nautobot_state }}"
+  loop: "{{ device_kinds | map(attribute='type') | map(attribute='vendor') | unique | list }}"
+  when: device_kinds is defined
+  run_once: yes
+
+- name: Create roles within Nautobot for Devices
+  networktocode.nautobot.role:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    name: "{{ item.name | lower }}"
+    state: "{{ nautobot_state }}"
+    color: "{{ item.color }}"
+    content_types:
+      - "dcim.device"
+  loop: "{{ device_kinds | map(attribute='role') | unique | list }}"
+  when: device_kinds is defined
+  run_once: yes
+
+- name: Create device types within Nautobot
+  networktocode.nautobot.device_type:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    model: "{{ item.model }}"
+    state: "{{ nautobot_state }}"
+    manufacturer: "{{ item.vendor | lower }}"
+    u_height: "{{ item.ru | default(omit) }}"
+  loop: "{{ device_kinds | map(attribute='type') | unique | list }}"
+  when: device_kinds is defined
+  run_once: yes
+
+- name: Create devices within Nautobot
+  networktocode.nautobot.device:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    name: "{{ inventory_hostname | lower }}"
+    state: "{{ nautobot_state }}"
+    device_type: "{{ device_model }}"
+    role: "{{ device_role | lower }}"
+    location: "{{ inventory_hostname.split('-')[0] }}"
+    status: "Planned"
+
+- name: Create Fabric interfaces within Nautobot
+  networktocode.nautobot.device_interface:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    state: "{{ nautobot_state }}"
+    device: "{{ inventory_hostname }}"
+    name: "{{ item.port }}"
+    description: "{{ item.type | default('CORE') }} | {{ item.peer }}| {{ item.pport }}"
+    enabled: true
+    mode: "Access"
+    status: "Active"
+    type: "1000Base-t (1GE)"
+  loop: "{{ p2p_ip[inventory_hostname] }}"
+  when: p2p_ip is defined
+
+- name: Create Management interfaces on Devices
+  networktocode.nautobot.device_interface:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    state: "{{ nautobot_state }}"
+    device: "{{ inventory_hostname }}"
+    name: "Management1"
+    description: "{{'Management Interface ' +  inventory_hostname }}"
+    enabled: true
+    mode: "Access"
+    mgmt_only: true
+    status: "Active"
+    type: "1000Base-t (1GE)"
+
+- name: Create Loopback0 Interface on Devices
+  networktocode.nautobot.device_interface:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    state: "{{ nautobot_state }}"
+    device: "{{ inventory_hostname }}"
+    name: "Loopback0"
+    description: "{{'Loopback0 Interface ' +  inventory_hostname }}"
+    enabled: true
+    mode: "Access"
+    status: "Active"
+    type: "Virtual"
+
+- name: Create IP Prefixes within Nautobot
+  networktocode.nautobot.prefix:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    state: "{{ nautobot_state }}"
+    prefix: "{{ item.prefix }}"
+    location: "{{ item.location | default(omit) }}"
+    status: "Active"
+  loop: "{{ subnets }}"
+  loop_control:
+    label: "{{ item.prefix }}"
+  run_once: yes
+
+- name: Create Loopback IPs within Nautobot
+  networktocode.nautobot.ip_address:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    state: "{{ nautobot_state }}"
+    address: "{{ loopback_ip }}"
+    status: "Active"
+
+- name: "Add Loopback IP addresses within Nautobot"
+  networktocode.nautobot.ip_address_to_interface:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    state: "{{ nautobot_state }}"
+    ip_address: "{{ lookup('networktocode.nautobot.lookup', 'ip-addresses', api_endpoint=nautobot_url, token=nautobot_token, api_filter='address={{ loopback_ip }}')['key'] }}"
+    interface:
+      name: "Loopback0"
+      device: "{{ inventory_hostname }}"
+
+- name: Create Management IPs within Nautobot
+  networktocode.nautobot.ip_address:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    state: "{{ nautobot_state }}"
+    address: "{{ ansible_host }}/32"
+    status: "Active"
+
+- name: "Add Management IP addresses within Nautobot"
+  networktocode.nautobot.ip_address_to_interface:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    state: "{{ nautobot_state }}"
+    ip_address: "{{ lookup('networktocode.nautobot.lookup', 'ip-addresses', api_endpoint=nautobot_url, token=nautobot_token, api_filter='address={{ loopback_ip }}')['key'] }}"
+    interface:
+      name: "Management1"
+      device: "{{ inventory_hostname }}"
+
+- name: Create Fabric IPs within Nautobot
+  networktocode.nautobot.ip_address:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    state: "{{ nautobot_state }}"
+    address: "{{ item.ip }}"
+    status: "Active"
+  loop: "{{ p2p_ip[inventory_hostname] }}"
+  when: p2p_ip is defined
+
+- name: "Add Fabric IP addresses within Nautobot"
+  networktocode.nautobot.ip_address_to_interface:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    state: "{{ nautobot_state }}"
+    ip_address: "{{ lookup('networktocode.nautobot.lookup', 'ip-addresses', api_endpoint=nautobot_url, token=nautobot_token, api_filter='address={{ item.ip }}')['key'] }}"
+    interface:
+      name: "{{ item.port }}"
+      device: "{{ inventory_hostname }}"
+  loop: "{{ p2p_ip[inventory_hostname] }}"
+  when: p2p_ip is defined

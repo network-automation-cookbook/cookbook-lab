@@ -1,0 +1,9 @@
+---
+- name: Populate Nautobot DataBase
+  hosts: dc1,dc2,cloud
+  gather_facts: no
+  vars:
+    nautobot_state: present
+  tasks:
+    - ansible.builtin.import_role:
+        name: build_nautobot_db

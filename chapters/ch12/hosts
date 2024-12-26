@@ -1,0 +1,36 @@
+
+[dc1]
+dc1-spine01     ansible_host=172.20.1.41 loopback_ip=10.100.1.254/32
+dc1-spine02     ansible_host=172.20.1.42 loopback_ip=10.100.1.253/32
+dc1-leaf01      ansible_host=172.20.1.35 loopback_ip=10.100.1.1/32
+dc1-leaf02      ansible_host=172.20.1.36 loopback_ip=10.100.1.2/32
+
+[dc2]
+dc2-spine01     ansible_host=172.20.2.41 loopback_ip=10.100.2.254/32
+dc2-spine02     ansible_host=172.20.2.42 loopback_ip=10.100.2.253/32
+dc2-leaf01      ansible_host=172.20.2.35 loopback_ip=10.100.2.1/32
+dc2-leaf02      ansible_host=172.20.2.36 loopback_ip=10.100.2.2/32
+
+[leaf]
+dc[1:2]-leaf0[1:2]
+
+[spine]
+dc[1:2]-spine0[1:2]
+
+
+[aws]
+aws_network_01 prefix=10.200.1.0/24
+aws_network_02 prefix=10.200.2.0/24
+
+[azure]
+azure_network_01 prefix=10.201.1.0/24
+azure_network_02 prefix=10.201.2.0/24
+
+[gcp]
+gcp_network_01 prefix=10.202.1.0/24
+gcp_network_02 prefix=10.202.2.0/24
+
+[cloud:children]
+aws
+azure
+gcp
