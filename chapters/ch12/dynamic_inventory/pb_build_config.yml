@@ -1,5 +1,5 @@
 ---
-- name: Create Report from Nautobot Data
+- name: Create Interface Configuration Snippets
   hosts: all
   gather_facts: no
   connection: local
@@ -18,6 +18,9 @@
             interfaces {
                 name
                 description
+                status {
+                  name
+                }
                 ip_addresses {
                   address
                 }
@@ -32,10 +35,11 @@
 
   - name: "Render the template inline for CLI config"
     copy:
-      dest: "./configs/{{ inventory_hostname}}.txt"
+      dest: "./configs/{{ inventory_hostname}}_intf.txt"
       content: |
         {% for interface in query_response[0].data.devices[0].interfaces %}
         interface {{ interface.name }}
           description {{ interface.description }}
           ip address {{ (interface.ip_addresses | first)['address'] }}
+          {% if interface.status.name == 'Active' %}no {% endif %}shutdown
         {% endfor %}
