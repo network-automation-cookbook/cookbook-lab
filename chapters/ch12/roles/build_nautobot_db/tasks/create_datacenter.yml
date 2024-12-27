@@ -115,6 +115,24 @@
     status: "Active"
     type: "Virtual"
 
+- name: Create cables within Nautobot
+  networktocode.nautobot.cable:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    state: "{{ nautobot_state }}"
+    termination_a_type: dcim.interface
+    termination_a:
+      device: "{{ inventory_hostname }}"
+      name: "{{ item.port }}"
+    termination_b_type: dcim.interface
+    termination_b:
+      device: "{{ item.peer }}"
+      name: "{{ item.pport }}"
+    status: "Planned"
+  loop: "{{ p2p_ip[inventory_hostname] }}"
+  when: "p2p_ip is defined and 'spine' in group_names"
+  ignore_errors: yes
+
 - name: Create IP Prefixes within Nautobot
   networktocode.nautobot.prefix:
     url: "{{ nautobot_url }}"

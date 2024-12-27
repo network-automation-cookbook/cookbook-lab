@@ -4,6 +4,7 @@
   gather_facts: no
   vars:
     nautobot_state: present
+  # strategy: host_pinned
   tasks:
     - ansible.builtin.import_role:
         name: build_nautobot_db

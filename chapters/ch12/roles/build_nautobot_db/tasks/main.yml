@@ -1,12 +1,12 @@
 ---
 - name: Create Nautobot Datacenter data
-  include_tasks: create_datacenter.yml
+  import_tasks: create_datacenter.yml
+  when: "'cloud' not in group_names"
   tags:
     - datacenter
-  when: "'cloud' not in group_names"
 
 - name: Create Nautobot Cloud data
-  include_tasks: create_cloud.yml
+  import_tasks: create_cloud.yml
+  when: "'cloud' in group_names"
   tags:
     - cloud
-  when: "'cloud' in group_names"

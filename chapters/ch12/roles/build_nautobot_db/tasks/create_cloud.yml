@@ -3,8 +3,9 @@
   networktocode.nautobot.manufacturer:
     url: "{{ nautobot_url }}"
     token: "{{ nautobot_token }}"
-    name: "{{ group_names | difference(['cloud']) | first }}"
     state: "{{ nautobot_state }}"
+    name: "{{ group_names | difference(['cloud']) | first }}"
+  throttle: 1
 
 - name: Create cloud account within Nautobot
   networktocode.nautobot.cloud_account:
@@ -14,6 +15,7 @@
     name: "{{ group_names | difference(['cloud']) | first }} development account"
     provider: "{{ group_names | difference(['cloud']) | first }}"
     account_number: "{{ account_id }}"
+  throttle: 1
 
 - name: Create cloud network resource type within Nautobot
   networktocode.nautobot.cloud_resource_type:
@@ -24,6 +26,7 @@
     provider: "{{ group_names | difference(['cloud']) | first }}"
     content_types:
       - "cloud.cloudnetwork"
+  throttle: 1
 
 - name: Create cloud subnet resource type within Nautobot
   networktocode.nautobot.cloud_resource_type:
@@ -34,6 +37,7 @@
     provider: "{{ group_names | difference(['cloud']) | first }}"
     content_types:
       - "cloud.cloudnetwork"
+  throttle: 1
 
 - name: Create cloud networks within Nautobot
   networktocode.nautobot.cloud_network:
@@ -66,6 +70,14 @@
     prefix: "{{ prefix }}"
     status: "Active"
 
+- name: Create a cloud networks to prefix assignment
+  networktocode.nautobot.cloud_network_prefix_assignment:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    state: "{{ nautobot_state }}"
+    cloud_network: "{{ inventory_hostname }} network"
+    cloud_prefix: "{{ prefix }}"
+
 - name: Calculate all subnets within the prefix
   ansible.builtin.set_fact:
     subnets: "{{ query('calculate_subnets', prefix, 26) }}"
@@ -79,14 +91,6 @@
     status: "Active"
   loop: "{{ subnets | zip(['a', 'b', 'c']) | list }}"
   register: subnet_prefixes
-
-- name: Create a cloud networks to prefix assignment
-  networktocode.nautobot.cloud_network_prefix_assignment:
-    url: "{{ nautobot_url }}"
-    token: "{{ nautobot_token }}"
-    state: "{{ nautobot_state }}"
-    cloud_network: "{{ inventory_hostname }} network"
-    cloud_prefix: "{{ prefix }}"
 
 - name: Create a cloud subnets to prefix assignment
   networktocode.nautobot.cloud_network_prefix_assignment:

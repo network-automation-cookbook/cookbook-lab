@@ -1,6 +1,6 @@
 ---
 nautobot_url: http://127.0.0.1:8080
-nautobot_token: 841188d3cc4e73de4fdd842ff521fe655f04aae8
+nautobot_token: 47a72c0b6b7a9c70c07501625a77fd398de59d1c
 
 locations:
   - name: DC1
