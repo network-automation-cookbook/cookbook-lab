@@ -153,13 +153,14 @@
     state: "{{ nautobot_state }}"
     address: "{{ loopback_ip }}"
     status: "Active"
+  register: loopback_ip_obj
 
 - name: "Add Loopback IP addresses within Nautobot"
   networktocode.nautobot.ip_address_to_interface:
     url: "{{ nautobot_url }}"
     token: "{{ nautobot_token }}"
     state: "{{ nautobot_state }}"
-    ip_address: "{{ lookup('networktocode.nautobot.lookup', 'ip-addresses', api_endpoint=nautobot_url, token=nautobot_token, api_filter='address={{ loopback_ip }}')['key'] }}"
+    ip_address: "{{ loopback_ip_obj.ip_address.id }}"
     interface:
       name: "Loopback0"
       device: "{{ inventory_hostname }}"
@@ -171,16 +172,25 @@
     state: "{{ nautobot_state }}"
     address: "{{ ansible_host }}/32"
     status: "Active"
+  register: management_ip_obj
 
 - name: "Add Management IP addresses within Nautobot"
   networktocode.nautobot.ip_address_to_interface:
     url: "{{ nautobot_url }}"
     token: "{{ nautobot_token }}"
     state: "{{ nautobot_state }}"
-    ip_address: "{{ lookup('networktocode.nautobot.lookup', 'ip-addresses', api_endpoint=nautobot_url, token=nautobot_token, api_filter='address={{ loopback_ip }}')['key'] }}"
+    ip_address: "{{ management_ip_obj.ip_address.id }}"
     interface:
       name: "Management1"
       device: "{{ inventory_hostname }}"
+
+- name: Make management IP the primary IP for devices
+  networktocode.nautobot.device:
+    url: "{{ nautobot_url }}"
+    token: "{{ nautobot_token }}"
+    name: "{{ inventory_hostname | lower }}"
+    state: "{{ nautobot_state }}"
+    primary_ip4: "{{ management_ip_obj.ip_address.id }}"
 
 - name: Create Fabric IPs within Nautobot
   networktocode.nautobot.ip_address:
@@ -191,15 +201,15 @@
     status: "Active"
   loop: "{{ p2p_ip[inventory_hostname] }}"
   when: p2p_ip is defined
+  register: fabric_ip_objs
 
 - name: "Add Fabric IP addresses within Nautobot"
   networktocode.nautobot.ip_address_to_interface:
     url: "{{ nautobot_url }}"
     token: "{{ nautobot_token }}"
     state: "{{ nautobot_state }}"
-    ip_address: "{{ lookup('networktocode.nautobot.lookup', 'ip-addresses', api_endpoint=nautobot_url, token=nautobot_token, api_filter='address={{ item.ip }}')['key'] }}"
+    ip_address: "{{ item.ip_address.id }}"
     interface:
-      name: "{{ item.port }}"
+      name: "{{ item.item.port }}"
       device: "{{ inventory_hostname }}"
-  loop: "{{ p2p_ip[inventory_hostname] }}"
-  when: p2p_ip is defined
+  loop: "{{ fabric_ip_objs.results }}"

@@ -1,0 +1,17 @@
+---
+- name: Create Report from Nautobot Data
+  hosts: all
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: Build Report
+      blockinfile:
+        block: |
+            nautobot_data:
+            {% for node in play_hosts %}
+              - { node: {{ node }} , type: {{ hostvars[node].device_types[0] }} , mgmt_ip: {{ hostvars[node].ansible_host }} }
+            {% endfor %}
+        path: ./report_output.yaml
+        create: yes
+      delegate_to: localhost
+      run_once: yes

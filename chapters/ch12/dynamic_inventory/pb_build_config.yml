@@ -1,0 +1,41 @@
+---
+- name: Create Report from Nautobot Data
+  hosts: all
+  gather_facts: no
+  connection: local
+  vars:
+    nautobot_url: http://127.0.0.1:8080
+    nautobot_token: 47a72c0b6b7a9c70c07501625a77fd398de59d1c
+  tasks:
+  - name: Define the GraqhQL query string to get interfaces
+    ansible.builtin.set_fact:
+      graph_variables:
+        device_name: "{{ inventory_hostname }}"
+      query_string: |
+        query ($device_name:[String]) {
+          devices (name: $device_name) {
+            name
+            interfaces {
+                name
+                description
+                ip_addresses {
+                  address
+                }
+            }
+          }
+        }
+
+  - name: Obtain list of device interfaces from Nautobot
+    ansible.builtin.set_fact:
+      query_response: "{{ query('networktocode.nautobot.lookup_graphql', query_string, graph_variables=graph_variables,
+        url=nautobot_url, token=nautobot_token) }}"
+
+  - name: "Render the template inline for CLI config"
+    copy:
+      dest: "./configs/{{ inventory_hostname}}.txt"
+      content: |
+        {% for interface in query_response[0].data.devices[0].interfaces %}
+        interface {{ interface.name }}
+          description {{ interface.description }}
+          ip address {{ (interface.ip_addresses | first)['address'] }}
+        {% endfor %}

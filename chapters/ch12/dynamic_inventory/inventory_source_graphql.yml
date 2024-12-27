@@ -1,0 +1,8 @@
+---
+plugin: networktocode.nautobot.gql_inventory
+api_endpoint: http://127.0.0.1:8080
+token: 47a72c0b6b7a9c70c07501625a77fd398de59d1c
+query:
+  devices:
+    device_type: model
+    primary_ip4: host
