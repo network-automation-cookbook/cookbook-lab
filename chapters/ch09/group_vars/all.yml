@@ -1,0 +1,12 @@
+---
+resource_group_name: "rg_{{ inventory_hostname }}"
+
+vnet_name: "vn_{{ inventory_hostname }}"
+
+route_tables:
+  - name: db_tier_rt
+    subnet: db_tier
+    routes:
+      - name: Default Route
+        prefix: 0.0.0.0/0
+        nh: none

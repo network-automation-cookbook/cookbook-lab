@@ -1,0 +1,23 @@
+---
+region: "westeurope"
+vnet_cidr: 10.1.0.0/16
+
+subnets:
+  - name: web_tier
+    cidr: 10.1.1.0/24
+  - name: db_tier
+    cidr: 10.1.2.0/24
+
+acls:
+  - name: Inbound_Web_Tier
+    subnet: web_tier
+    rules:
+      - name: Allow_HTTP_Internet
+        destination_address_prefix: 10.1.1.0/24
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        destination_port_range:
+          - 80
+          - 443
+        priority: 101
