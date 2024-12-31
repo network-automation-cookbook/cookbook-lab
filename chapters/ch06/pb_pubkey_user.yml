@@ -1,0 +1,15 @@
+---
+- name: "Update User for Public Key Auth"
+  hosts: "arista_ceos"
+  tasks:
+    - name: "Generate an OpenSSH rsa keypair with 2048 bits"
+      community.crypto.openssh_keypair:
+        path: "~/.ssh/id_rsa"
+        size: 2048
+      run_once: yes
+    - name: "Update the ansible-ro user adding public key auth"
+      arista.eos.eos_user:
+        name: "ansible-ro"
+        sshkey: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        role: "network-operator"
+        state: present
