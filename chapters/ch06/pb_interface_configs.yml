@@ -1,0 +1,6 @@
+---
+- name: "BUILD INTERFACE CONFIGS FOR ARISTA"
+  hosts: "arista_ceos"
+  connection: "local"
+  roles:
+    - "config_generation"

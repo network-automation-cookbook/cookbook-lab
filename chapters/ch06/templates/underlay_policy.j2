@@ -1,0 +1,23 @@
+ip routing
+!
+{% set bgp_grp = 'LEAF' if 'spine' in inventory_hostname else
+'SPINE' %}
+!
+route-map loopback permit 10
+match ip address prefix-list loopback
+!
+{% if 'spine' in inventory_hostname %}
+!
+ip prefix-list loopback
+{% for node,ip in lo_ip.items() | sort %}
+{% if 'leaf' in node or inventory_hostname in node %}
+seq {{loop.index + 10 }} permit {{ip}}
+{% endif %}
+{% endfor %}
+!
+{% else %}
+!
+ip prefix-list loopback
+seq 10 permit {{lo_ip[inventory_hostname]}}
+!
+{% endif %}

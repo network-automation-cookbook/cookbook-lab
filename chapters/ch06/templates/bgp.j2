@@ -1,0 +1,28 @@
+router bgp {{ bgp['asn'] }}
+   router-id {{ interfaces['Loopback0']['ip_address'] | split('/') | first }}
+   maximum-paths 2
+   bgp bestpath tie-break router-id
+   {% for group_name, peer_group in bgp['peer_groups'].items() %}
+   {% if 'underlay' in group_name %}
+   neighbor {{ group_name | upper }} peer group
+   neighbor {{ group_name | upper }} description "{{ peer_group['description'] }}"
+   neighbor {{ group_name | upper }} graceful-restart-helper
+   neighbor {{ group_name | upper }} send-community standard extended
+   neighbor {{ group_name | upper }} maximum-routes 100000 warning-only
+   neighbor 172.31.1.2 peer group SPINE
+   neighbor 172.31.1.2 remote-as 65100
+   redistribute connected route-map loopback
+   !
+   vlan 10
+      rd 10.100.1.2:1010
+      route-target both 1010:1010
+      redistribute learned
+   !
+   address-family evpn
+      neighbor SPINE_EVPN activate
+   !
+   address-family ipv4
+      neighbor SPINE activate
+      neighbor SPINE route-map loopback out
+!
+end
