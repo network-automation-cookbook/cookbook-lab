@@ -1,0 +1,36 @@
+---
+- name: "EExplore YAML Multiline Strings"
+  hosts: "localhost"
+  tasks:
+    - name: "Debug Literal Block"
+      ansible.builtin.debug:
+        msg: |
+          banner login $
+          ******************
+            This is an example login banner.
+          ******************
+          $
+    - name: "Debug Folded Style"
+      ansible.builtin.debug:
+        msg: >
+          banner login $
+          ******************
+            This is an example login banner.
+          ******************
+          $
+    - name: "Debug Literal Block with Striping"
+      ansible.builtin.debug:
+        msg: |-
+          banner login $
+          ******************
+            This is an example login banner.
+          ******************
+          $
+    - name: "Debug Folded Style with Striping"
+      ansible.builtin.debug:
+        msg: >-
+          banner login $
+          ******************
+            This is an example login banner.
+          ******************
+          $

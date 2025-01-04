@@ -1,6 +1,9 @@
 # Ansible Retry Files
 *.retry
 
+# Random Temps
+tmp/
+
 # Swap files
 *.swp
 
@@ -318,6 +321,6 @@ local
 # Dev Containers
 .devcontainer/dev
 
-
 # Secrets
 *gcp-ansible-secret.json
+

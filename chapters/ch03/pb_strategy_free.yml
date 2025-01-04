@@ -1,0 +1,13 @@
+---
+- name: "DEMONSTRATE FREE STRATEGY"
+  hosts: "all"
+  gather_facts: False
+  strategy: "free"
+  tasks:
+    - name: "GET DEVICE NAMES"
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}"
+
+    - name: "GET DEVICE OS"
+      ansible.builtin.debug:
+        msg: "{{ ansible_network_os }}"

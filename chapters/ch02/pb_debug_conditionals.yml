@@ -1,0 +1,14 @@
+---
+- name: Debug with Conditionals
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Display Hostname
+      ansible.builtin.debug:
+        msg: "Router name is {{ inventory_hostname }}"
+      when: inventory_hostname in groups["linux"]
+    - name: Display the NTP Variables
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} has NTP servers {{ ntp }}"
+      when: inventory_hostname in groups["network_equipment"]
+

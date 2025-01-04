@@ -1,0 +1,9 @@
+---
+- name: "INSTALL MISSING PYLIBSSH PLAY"
+  gather_facts: false
+  connection: "local"
+  hosts: "localhost"
+  tasks:
+    - name: "PIP INSTALL ANSIBLE_PYLIBSSH"
+      ansible.builtin.pip:
+        name: "ansible-pylibssh"

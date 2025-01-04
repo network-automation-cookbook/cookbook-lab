@@ -1,0 +1,6 @@
+---
+collections:
+  - "nokia.srlinux"
+  - "junipernetworks.junos"
+  - "arista.eos"
+  - "networktocode.nautobot"
