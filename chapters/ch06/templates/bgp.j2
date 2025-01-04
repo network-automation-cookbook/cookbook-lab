@@ -27,10 +27,9 @@ router bgp {{ bgp['asn'] }}
    {% endfor %}
    redistribute connected route-map loopback
    !
-   vlan 10
-      rd 10.100.1.2:1010
-      route-target both 1010:1010
-      redistribute learned
+   {% if inventory_hostname in groups['leafs'] %}
+   {% include './bgp_vlan.j2' %}
+   {% endif %}
    !
    {% if bgp['peer_groups']['overlay'] is defined %}   
    address-family evpn

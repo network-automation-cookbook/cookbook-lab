@@ -9,3 +9,14 @@ interfaces:
   Management0:
     ip_address: "198.51.100.13/24"
     description: "clab mgmt network"
+bgp:
+  asn: 65002
+  peer_groups:
+    underlay:
+      - peer: ceos-01
+        ip_address: 172.31.1.2
+        remote_as: 65100
+    overlay:
+      - peer: ceos-01
+        ip_address: 10.100.1.254
+        remote_as: 65100
