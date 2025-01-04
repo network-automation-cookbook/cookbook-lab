@@ -5,7 +5,7 @@
   connection: local
   tasks:
     - name: Build Report
-      blockinfile:
+      ansible.builtin.blockinfile:
         block: |
             nautobot_data:
             {% for node in play_hosts %}

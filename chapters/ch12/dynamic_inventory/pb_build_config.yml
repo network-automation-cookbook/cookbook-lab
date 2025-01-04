@@ -34,7 +34,7 @@
         url=nautobot_url, token=nautobot_token) }}"
 
   - name: "Render the template inline for CLI config"
-    copy:
+    ansible.builtin.copy:
       dest: "./configs/{{ inventory_hostname}}_intf.txt"
       content: |
         {% for interface in query_response[0].data.devices[0].interfaces %}
