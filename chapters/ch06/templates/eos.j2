@@ -2,6 +2,10 @@
 
 {% include "./interfaces.j2" %}
 
+{% if inventory_hostname in groups['leafs'] %}
+{% include "./vxlan_interface.j2" %}
+{% endif %}
+
 {% include "./underlay_policy.j2" %}
 
 {% include "./bgp.j2" %}

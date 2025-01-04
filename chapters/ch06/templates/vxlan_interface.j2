@@ -1,0 +1,11 @@
+interface Vxlan1
+  vxlan source-interface Loopback0
+  vxlan udp-port
+  {% for leaf_switch in groups['leafs'] %}
+  {% for vxlan in hostvars[leaf_switch]['interfaces'] %}
+  {% if vxlan['vlan'] is defined %}
+  vxlan vlan {{ vxlan['vlan'] }} vni 10{{ vxlan['vlan'] }}
+  {% endif %}
+  {% endfor %}
+  {% endfor %}
+!
