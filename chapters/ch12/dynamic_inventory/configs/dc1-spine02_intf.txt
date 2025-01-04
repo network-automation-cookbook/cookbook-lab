@@ -1,0 +1,20 @@
+interface Ethernet1
+  description CORE | dc1-leaf01| Ethernet9
+  ip address 172.30.1.4/31
+  no shutdown
+interface Ethernet2
+  description CORE | dc1-leaf02| Ethernet9
+  ip address 172.30.1.6/31
+  no shutdown
+interface Ethernet6
+  description CORE | dc1-spine01| Ethernet6
+  ip address 172.30.1.9/31
+  no shutdown
+interface Loopback0
+  description Loopback0 Interface dc1-spine02
+  ip address 10.100.1.253/32
+  no shutdown
+interface Management1
+  description Management Interface dc1-spine02
+  ip address 172.20.1.42/32
+  no shutdown
