@@ -1,0 +1,17 @@
+# ch2_pb_jinja2.yml
+---
+- name: GENERATE NTP CONFIGS
+  hosts: arista_ceos
+  gather_facts: no
+  tasks:
+    - name: Create Configs Directory
+      ansible.builtin.file:
+        path: configs
+        state: directory
+      delegate_to: localhost
+      run_once: true
+    - name: Generate Arista Config
+      ansible.builtin.template:
+        src: templates/arista_ceos.j2
+        dest: configs/{{ inventory_hostname }}.cfg
+      delegate_to: localhost

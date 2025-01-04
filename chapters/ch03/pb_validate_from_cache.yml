@@ -1,0 +1,14 @@
+---
+- name: "Validate Cache Data"
+  connection: "local"
+  hosts: "all"
+  tasks:
+    - name: "Validate all Interfaces"
+      ansible.builtin.assert:
+        that:
+          - item.value.lineprotocol == "up"
+      loop: "{{ ansible_net_interfaces | dict2items }}"
+    - name: "Validate Custom Fact"
+      ansible.builtin.assert:
+        that:
+          - site == "Egypt"

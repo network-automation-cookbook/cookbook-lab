@@ -1,0 +1,11 @@
+---
+- name: LOOP THROUGH A LIST AND PRINT
+  hosts: arista_ceos
+  gather_facts: no
+  tasks:
+    - name: DISPLAY ALL NTP SERVERS LOOP_VAR and LOOP_INDEX
+      ansible.builtin.debug:
+        msg: "Router {{ inventory_hostname }} with ntp server {{ item }} at index {{ loop_index }}"
+      loop: "{{ ntp }}"
+      loop_control:
+        index_var: "loop_index"
