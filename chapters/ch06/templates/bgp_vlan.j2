@@ -4,7 +4,7 @@
   vlan {{ int_data['vlan'] }}
     rd {{ hostvars[leaf_switch]['interfaces']['Loopback0']['ip_address'] | split('/') | first }}:10{{ int_data['vlan'] }}
     route-target both 10{{ int_data['vlan'] }}:10{{ int_data['vlan'] }}
-    vxlan vlan {{ int_data['vlan'] }} vni 10{{ int_data['vlan'] }}
+    redistribute learned
   {% endif %}
   {% endfor %}
   {% endfor %}

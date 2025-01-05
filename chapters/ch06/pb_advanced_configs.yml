@@ -1,0 +1,11 @@
+---
+- name: "BUILD CONFIGS FOR ARISTA"
+  hosts: "arista_ceos"
+  connection: "local"
+  roles:
+    - "config_generation"
+  tasks:
+    - name: "DEPLOY ADVANCED CONFIG"
+      arista.eos.eos_config:
+        src: "output/config//{{ inventory_hostname }}.cfg"
+        save_when: changed

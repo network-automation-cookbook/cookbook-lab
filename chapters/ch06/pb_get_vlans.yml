@@ -1,0 +1,17 @@
+---
+- name: "Retrieve All VLANs from Leaf Switches"
+  hosts: "leafs"
+  tasks:
+    - name: "Get All VLANs"
+      arista.eos.eos_command:
+        commands: show vlan | json
+      register: show_vlan
+
+    - name: "Validate VLANs are Present"
+      ansible.builtin.assert:
+        that: (interfaces[item]['vlan'] | string) in show_vlan.stdout[0].vlans.keys()
+        fail_msg: "VLAN:{{ interfaces[item]['vlan'] }} is NOT configured "
+        success_msg: "VLAN:{{ interfaces[item]['vlan'] }} is configured "
+      when: interfaces[item]['vlan'] is defined
+      loop: "{{ interfaces.keys() | list }}"
+      delegate_to: localhost
