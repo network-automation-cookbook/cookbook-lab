@@ -1,0 +1,18 @@
+!
+route-map loopback permit 10
+   match ip address prefix-list loopback
+!
+{% if inventory_hostname in groups['spines'] %}
+!
+ip prefix-list loopback
+{% for leaf_switch in groups['leafs'] %}
+   seq {{loop.index + 10 }} permit {{ hostvars[leaf_switch]['interfaces']['Loopback0']['ip_address'] }}
+{% endfor %}
+   seq 100 permit {{ interfaces['Loopback0']['ip_address'] }}
+!
+{% else %}
+!
+ip prefix-list loopback
+   seq 10 permit {{ interfaces['Loopback0']['ip_address'] }}
+!
+{% endif %}
