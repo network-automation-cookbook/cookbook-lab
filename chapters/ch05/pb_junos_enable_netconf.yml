@@ -1,0 +1,10 @@
+
+- name: "Prepare Juniper for Automation"
+  hosts: "juniper_crpd"
+  tasks:
+    - name: "Enable NETCONF on Default Port"
+      junipernetworks.junos.junos_netconf:
+        listens_on: "830"
+        state: "present"
+      vars:
+        ansible_connection: "ansible.builtin.network_cli"
