@@ -3,20 +3,14 @@ router bgp {{ bgp['asn'] }}
    maximum-paths 2
    bgp bestpath tie-break router-id
    {% for group_name in bgp['peer_groups'] %}
-   {% if 'underlay' in group_name %}
    neighbor {{ group_name | upper }} peer group
-   neighbor {{ group_name | upper }} description "Peer Group for Underlay"
-   neighbor {{ group_name | upper }} graceful-restart-helper
-   neighbor {{ group_name | upper }} send-community standard extended
-   neighbor {{ group_name | upper }} maximum-routes 100000 warning-only
-   {% elif 'overlay' in group_name %}
-   neighbor {{ group_name | upper }} peer group
-   neighbor {{ group_name | upper }} update-source Loopback0
-   neighbor {{ group_name | upper }} description "Peer Group for Overlay"
-   neighbor {{ group_name | upper }} ebgp-multihop 2
+   neighbor {{ group_name | upper }} description "Peer Group for {{ group_name | title }}"
    neighbor {{ group_name | upper }} graceful-restart-helper
    neighbor {{ group_name | upper }} send-community extended
    neighbor {{ group_name | upper }} maximum-routes 100000 warning-only
+   {% if 'overlay' in group_name %}
+   neighbor {{ group_name | upper }} update-source Loopback0
+   neighbor {{ group_name | upper }} ebgp-multihop 2
    {% endif %}
    {% endfor %}
    {% for group_name, peer_group_peers in bgp['peer_groups'].items() %}
@@ -36,8 +30,11 @@ router bgp {{ bgp['asn'] }}
       neighbor OVERLAY activate
    !
    {% endif %}
-   {% if bgp['peer_groups']['underlay'] is defined  %}   
    address-family ipv4
+   {% if bgp['peer_groups']['core'] is defined  %}   
+      neighbor CORE activate
+   {% endif %}
+   {% if bgp['peer_groups']['underlay'] is defined  %}   
       neighbor UNDERLAY activate
       neighbor UNDERLAY route-map loopback out
    {% endif %}

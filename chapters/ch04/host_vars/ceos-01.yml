@@ -35,3 +35,10 @@ bgp:
       - peer: ceos-03
         ip_address: 10.100.1.2
         remote_as: 65002
+    core:
+      - peer: crpd-01
+        ip_address: 172.31.1.5
+        remote_as: 65400
+      - peer: crpd-02
+        ip_address: 172.31.1.7
+        remote_as: 65400

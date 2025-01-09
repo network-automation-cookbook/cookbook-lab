@@ -9,7 +9,4 @@
         https_port: 443
         https: yes
         state: started
-    - name: "Enable eAPI under VRF"
-      arista.eos.eos_eapi:
-        state: started
         vrf: "{{global.mgmt_vrf}}"
