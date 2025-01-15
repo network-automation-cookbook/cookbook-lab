@@ -6,5 +6,7 @@
       junipernetworks.junos.junos_netconf:
         listens_on: "830"
         state: "present"
+      become: true
       vars:
         ansible_connection: "ansible.builtin.network_cli"
+        ansible_become_exe: "cli"

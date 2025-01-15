@@ -1,7 +1,13 @@
 ---
-- name: "Update User for Public Key Auth"
+- name: "Create New User with Ansible"
   hosts: "arista_ceos"
   tasks:
+    - name: "Create the ansible-ro user with password auth"
+      arista.eos.eos_user:
+        name: "ansible-ro"
+        configured_password: "ansiblero123"
+        role: "network-operator"
+        state: "present"
     - name: "Generate an OpenSSH rsa keypair with 2048 bits"
       community.crypto.openssh_keypair:
         path: "~/.ssh/id_rsa"

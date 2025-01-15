@@ -8,16 +8,16 @@ router bgp {{ bgp['asn'] }}
    neighbor {{ group_name | upper }} graceful-restart-helper
    neighbor {{ group_name | upper }} send-community extended
    neighbor {{ group_name | upper }} maximum-routes 100000 warning-only
-   {% if 'overlay' in group_name %}
+   {%     if 'overlay' in group_name %}
    neighbor {{ group_name | upper }} update-source Loopback0
    neighbor {{ group_name | upper }} ebgp-multihop 2
-   {% endif %}
+   {%     endif %}
    {% endfor %}
    {% for group_name, peer_group_peers in bgp['peer_groups'].items() %}
-   {% for bgp_peer in peer_group_peers %}
+   {%     for bgp_peer in peer_group_peers %}
    neighbor {{ bgp_peer['ip_address'] }} peer group {{ group_name | upper }}
    neighbor {{ bgp_peer['ip_address'] }} remote-as {{ bgp_peer['remote_as'] }}    
-   {% endfor %}
+   {%     endfor %}
    {% endfor %}
    redistribute connected route-map loopback
    !

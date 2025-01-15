@@ -1,6 +1,6 @@
 ---
 - name: "Enable eAPI on Arista Switches"
-  hosts: arista_ceos
+  hosts: "arista_ceos"
   vars:
     ansible_connection: ansible.netcommon.network_cli
   tasks:
