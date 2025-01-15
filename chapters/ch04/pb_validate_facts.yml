@@ -13,7 +13,7 @@
         fail_msg: "Interface {{item}} is not Operational "
       loop: "{{ interfaces.keys() | list }}"
 
-    - name: "Validate all DC Fabric Interface are has Correct IP"
+    - name: "Validate all DC Fabric Interface a have the Correct IP"
       ansible.builtin.assert:
         that:
           - ansible_net_interfaces[item].ipv4.address == interfaces[item]['ip_address'].split('/')[0]
