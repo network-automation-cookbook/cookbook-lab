@@ -1,0 +1,20 @@
+---
+- name: "Collect and Validate Juniper Core Facts"
+  hosts: "juniper_crpd"
+  tasks:
+    - name: "Collect BGP Facts Using RPC"
+      junipernetworks.junos.junos_rpc:
+        rpc: get-bgp-summary-information
+      register: bgp_information
+    - name: "Set Fact for the response XML data"
+      ansible.builtin.set_fact:
+        parsed_xml_data: "{{ bgp_information['output'][0] | ansible.utils.from_xml }}"
+    - debug:
+        msg: "{{ parsed_xml_data['rpc-reply']['bgp-information']['bgp-peer'] }}"
+    - name: "Validate BGP Neighbor States"
+      ansible.builtin.assert:
+        that:
+          - parsed_xml_data['rpc-reply']['bgp-information']['bgp-peer'] | selectattr("peer-address", "equalto", item.ip_address)
+        quiet: true
+        fail_msg: "{{item.ip_address}} peering not established"
+      loop: "{{ bgp['peer_groups']['ebgp-peer-dc'] }}"
