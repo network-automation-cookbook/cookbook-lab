@@ -9,12 +9,12 @@
     - name: "Set Fact for the response XML data"
       ansible.builtin.set_fact:
         parsed_xml_data: "{{ bgp_information['output'][0] | ansible.utils.from_xml }}"
-    - debug:
-        msg: "{{ parsed_xml_data['rpc-reply']['bgp-information']['bgp-peer'] }}"
-    - name: "Validate BGP Neighbor States"
+    - name: "Validate BGP Neighbor Exists"
       ansible.builtin.assert:
         that:
-          - parsed_xml_data['rpc-reply']['bgp-information']['bgp-peer'] | selectattr("peer-address", "equalto", item.ip_address)
+          - parsed_xml_data['rpc-reply']['bgp-information']['bgp-peer'] | selectattr("peer-address", "equalto", item['ip_address'])
         quiet: true
-        fail_msg: "{{item.ip_address}} peering not established"
+        fail_msg: "{{ item }} peering is not configured."
       loop: "{{ bgp['peer_groups']['ebgp-peer-dc'] }}"
+      loop_control:
+        label: "{{ item['ip_address'] }} BGP Neighbor Exist"
