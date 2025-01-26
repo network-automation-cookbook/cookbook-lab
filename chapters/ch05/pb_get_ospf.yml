@@ -1,0 +1,15 @@
+---
+- name: "Collect and Validate OSPF"
+  hosts: "juniper_crpd"
+  tasks:
+    - name: "Collect OSPF Neighbors"
+      junipernetworks.junos.junos_command:
+        commands: show ospf neighbor | display json
+      register: ospf_information
+    - name: "Validate All OSPF Peers are in Full State"
+      ansible.builtin.assert:
+        that: item['ospf-neighbor-state'][0]['data'] == 'Full'
+        quiet: true
+      loop: "{{ ospf_information['stdout'][0]['ospf-neighbor-information'][0]['ospf-neighbor'] }}"
+      loop_control:
+        label: "OSPF Neighbor {{ item['neighbor-address'][0]['data'] }}"

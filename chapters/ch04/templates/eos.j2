@@ -1,0 +1,21 @@
+! Comment line {{ inventory_hostname }} config
+
+{% for leaf_switch in groups['leafs'] %}
+{%     for int_data in hostvars[leaf_switch]['interfaces'].values() %}
+{%         if int_data['vlan'] is defined %}
+vlan {{ int_data['vlan'] }}
+{%         endif %}
+{%     endfor %}
+{% endfor %}
+
+{% include "./interfaces.j2" %}
+
+{% if inventory_hostname in groups['leafs'] %}
+{% include "./vxlan_interface.j2" %}
+{% endif %}
+
+ip routing
+
+{% include "./underlay_policy.j2" %}
+
+{% include "./bgp.j2" %}

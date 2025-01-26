@@ -1,0 +1,23 @@
+---
+- name: "Create New User with Ansible"
+  hosts: "arista_ceos"
+  tasks:
+    - name: "Create the ansible-ro user with password auth"
+      arista.eos.eos_user:
+        name: "ansible-ro"
+        configured_password: "ansiblero123"
+        role: "network-operator"
+        state: "present"
+    - name: "Generate an OpenSSH rsa keypair with 2048 bits"
+      community.crypto.openssh_keypair:
+        path: "~/.ssh/id_rsa"
+        size: 2048
+        state: present
+        regenerate: "full_idempotence"
+      run_once: yes
+    - name: "Update the ansible-ro user adding public key auth"
+      arista.eos.eos_user:
+        name: "ansible-ro"
+        sshkey: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        role: "network-operator"
+        state: present

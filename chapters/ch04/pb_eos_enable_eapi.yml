@@ -1,0 +1,12 @@
+---
+- name: "Enable eAPI on Arista Switches"
+  hosts: "arista_ceos"
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
+  tasks:
+    - name: "Enable eAPI"
+      arista.eos.eos_eapi:
+        https_port: 443
+        https: yes
+        state: started
+        vrf: "{{global.mgmt_vrf}}"

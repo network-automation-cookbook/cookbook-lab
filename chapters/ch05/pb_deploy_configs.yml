@@ -1,0 +1,9 @@
+---
+- name: "BUILD CONFIGS FOR JUNIPER"
+  hosts: "juniper_crpd"
+  tasks:
+    - name: "DEPLOY ADVANCED CONFIG"
+      junipernetworks.junos.junos_config:
+        src: "output/config/{{ inventory_hostname }}.cfg"
+        src_format: "set"
+        update: "merge"

@@ -1,0 +1,11 @@
+---
+- name: "CREATE OUTPUT CONFIGS DIRECTORY"
+  ansible.builtin.file:
+    path: "{{ config_output_root_dir }}"
+    state: "directory"
+  run_once: yes
+- name: "GENERATE CONFIGURATIONS FROM JINJA2 TEMPLATE"
+  ansible.builtin.template:
+    src: "{{ config_template_root_dir }}.j2"
+    dest: "{{ config_output_root_dir }}/{{ inventory_hostname }}.cfg"
+    lstrip_blocks: true

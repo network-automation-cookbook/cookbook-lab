@@ -1,0 +1,13 @@
+---
+- name: "Create New User with Ansible"
+  hosts: "juniper_crpd"
+  tasks:
+    - name: "Create the ansible-ro user with password auth"
+      junipernetworks.junos.junos_user:
+        name: "{{ item['name'] }}"
+        role: "{{ item['role'] }}"
+        encrypted_password: "{{ item['password'] | password_hash('sha512') }}"
+        state: present
+      loop: "{{ global['users'] }}"
+      loop_control:
+        label: "{{ item['name'] }}"

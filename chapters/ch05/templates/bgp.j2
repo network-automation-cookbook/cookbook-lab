@@ -1,0 +1,10 @@
+set routing-options autonomous-system {{ bgp['asn'] }}
+set routing-options router-id {{ interfaces['Lo0']['ip_address'].split('/')[0] }}
+{% for group_name, peer_group_peers in bgp['peer_groups'].items() %}
+{%     for bgp_peer in peer_group_peers %}
+set protocols bgp group {{ group_name }} type external
+set protocols bgp group {{ group_name }} peer-as {{ bgp_peer['remote_as'] }}
+set protocols bgp group {{ group_name }} neighbor {{ bgp_peer['ip_address'].split('/')[0] }}
+set protocols bgp group {{ group_name }} local-address {{ bgp_peer['local_address'].split('/')[0] }}
+{%     endfor %}
+{% endfor %}

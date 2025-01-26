@@ -1,0 +1,4 @@
+{% for name, int_details in interfaces.items() %}
+set interfaces {{ name | lower }} unit 0 family inet address {{ int_details['ip_address'] }}
+set interfaces {{ name | lower }} unit 0 description {{ int_details['description'] | upper }}
+{% endfor %}

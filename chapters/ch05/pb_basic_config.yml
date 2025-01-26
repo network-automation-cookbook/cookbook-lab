@@ -1,0 +1,9 @@
+---
+- name: "Configure Hostname and DNS"
+  hosts: "juniper_crpd"
+  tasks:
+    - name: "Configure Basic Configuration on Juniper Core"
+      junipernetworks.junos.junos_system:
+        hostname: "{{ inventory_hostname }}"
+        name_servers: "{{ global['dns'] }}"
+        state: "present"

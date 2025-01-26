@@ -1,0 +1,6 @@
+---
+- name: "BUILD CONFIGS FOR JUNIPER"
+  hosts: "juniper_crpd"
+  connection: "local"
+  roles:
+    - "config_generation"
