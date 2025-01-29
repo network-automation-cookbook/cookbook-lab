@@ -1,0 +1,12 @@
+---
+vars:
+  bgp_peers:
+    address: "{{ item.address }}"
+    peer_state: "{{ item.peer_state }}"
+keys:
+  result:
+    value: "{{ bgp_peers }}"
+    top: "bgp-information/bgp-peer"
+    items:
+      address: "peer-address"
+      peer_state: "peer-state"
