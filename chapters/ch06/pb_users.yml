@@ -1,0 +1,16 @@
+- name: "Create New User with Ansible"
+  hosts: "nokia_srlinux"
+  vars_files:
+    - srl_secret.yml
+  tasks:
+    - name: "Create Users on Nokia Devices."
+      nokia.srlinux.config:
+        replace:
+          - path: /system/aaa/authentication/user[username={{ item }}]
+            value:
+              password: "{{ lookup('vars', item.replace('-', '_')) }}"
+              superuser: "{% if 'rw' in item %}true{% else %}false{% endif %}"
+        save_when: "changed"
+      loop:
+        - "ansible-rw"
+        - "ansible-ro"
