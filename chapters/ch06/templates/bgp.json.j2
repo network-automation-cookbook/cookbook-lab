@@ -1,0 +1,60 @@
+{% for group_name in bgp['peer_groups'] %}
+          "autonomous-system": {{ bgp['asn'] }},
+          "router-id": "{{ interfaces['system0']['ip_address'] | split('/') | first }}",
+          "afi-safi": [
+            {
+              "afi-safi-name": "ipv4-unicast",
+              "admin-state": "enable"
+            }
+          ],
+          "group": [
+            {%     if 'overlay' in group_name %}
+            {
+              "group-name": "{{ group_name }}",
+              "peer-as": 100,
+              "export-policy": [
+                "all"
+              ],
+              "import-policy": [
+                "all"
+              ],
+              "afi-safi": [
+                {
+                  "afi-safi-name": "evpn",
+                  "admin-state": "enable"
+                },
+                {
+                  "afi-safi-name": "ipv4-unicast",
+                  "admin-state": "disable"
+                }
+              ],
+              "local-as": {
+                "as-number": 100
+              },
+              "timers": {
+                "minimum-advertisement-interval": 1
+              }
+            },
+            {% endif %}
+            {
+              "group-name": "{{ group_name }}",
+              "export-policy": [
+                "all"
+              ],
+              "import-policy": [
+                "all"
+              ]
+            }
+          ],
+          "neighbor": [
+   {% for group_name, peer_group_peers in bgp['peer_groups'].items() %}
+   {%     for bgp_peer in peer_group_peers %}
+            {
+              "peer-address": "{{ bgp_peer['ip_address'] }}",
+              "peer-as": {{ bgp_peer['remote_as'] }},
+              "peer-group": "{{ group_name }}"
+            }{{ "," if not loop.last else "" }}
+   {%     endfor %}
+   {% endfor %}
+{% endfor %}
+          ]

@@ -1,0 +1,12 @@
+- name: "Configure Hostname and DNS"
+  hosts: "nokia_srlinux"
+  vars_files:
+    - srl_secret.yml
+  tasks:
+    # - debug:
+    #     msg: "{{lookup('ansible.builtin.template', '{{playbook_dir}}/templates/srlinux.j2') | from_json }}"
+    - name: "Configure the Hostname on Nokia"
+      nokia.srlinux.config:
+        update:
+          - path: /
+            value: "{{ lookup('ansible.builtin.template', '{{playbook_dir}}/templates/srlinux.j2') }}"

@@ -1,0 +1,22 @@
+  "network-instance": [
+    {
+      "name": "default",
+      "interface": [
+{% for name, int_details in interfaces.items() %}
+{% if int_details['vrf'] is defined %}
+{% if int_details['vrf'] == 'default' %}
+        {
+          "name": "{{ name }}.{{ int_details['unit'] }}"
+        }{{ "," if not loop.last else "" }}
+{% endif %}
+{% endif %}
+{% endfor %}
+      ],
+      "protocols": {
+        "bgp": {
+          {% include "./bgp.json.j2" %}
+
+        }
+      }
+    },
+  ]

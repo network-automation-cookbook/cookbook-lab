@@ -4,6 +4,9 @@
     - srl_secret.yml
   tasks:
     - name: "Create Users on Nokia Devices."
+      vars:
+        ansible_user: admin
+        ansible_password: NokiaSrl1!
       nokia.srlinux.config:
         replace:
           - path: /system/aaa/authentication/user[username={{ item }}]

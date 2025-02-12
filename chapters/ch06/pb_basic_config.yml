@@ -1,18 +1,14 @@
 ---
 - name: "Configure Hostname and DNS"
   hosts: "nokia_srlinux"
+  vars_files:
+    - srl_secret.yml
   tasks:
     - name: "Configure the Hostname on Nokia"
       nokia.srlinux.config:
-        update:
+        replace:
           - path: /system/name/host-name
             value: "{{ inventory_hostname }}"
-        save_when: "changed"
-    - name: "Configure DNS servers on Nokia"
-      nokia.srlinux.config:
-        replace:
           - path: /system/dns/server-list
-            value:
-              - "{{ item }}"
+            value: "{{ global['dns'] }}"
         save_when: "changed"
-      loop: "{{ global['dns'] }}"

@@ -1,0 +1,25 @@
+
+  "interface": [
+{% for name, int_details in interfaces.items() %}
+    {
+      "name": "{{ name }}",
+      "description": "{{ int_details['description'] }}",
+      "admin-state": "enable",
+      "subinterface": [
+        {
+          "index": "{{ int_details['unit'] | int }}",
+          "admin-state": "enable",
+          "ipv4": {
+            "admin-state": "enable",
+            "address": [
+              {
+                "ip-prefix": "{{ int_details['ip_address'] | default('') }}"
+              }
+            ]
+          }
+        }
+      ]
+    }{{ "," if not loop.last else "" }}
+  {% endfor %}
+  ]
+
