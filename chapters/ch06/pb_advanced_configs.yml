@@ -4,3 +4,11 @@
   connection: "local"
   roles:
     - "config_generation"
+  vars_files:
+    - srl_secret.yml
+  tasks:
+    - name: "DEPLOY ADVANCED CONFIG"
+      nokia.srlinux.config:
+        update:
+          - path: /
+            value: "{{ lookup('ansible.builtin.template', '{{playbook_dir}}/templates/srlinux.j2') }}"
