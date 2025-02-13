@@ -40,3 +40,10 @@ bgp:
       - peer: srl-03
         ip_address: 192.168.12.1
         remote_as: 65102
+    core:
+      - peer: crpd-01
+        ip_address: 172.31.1.5
+        remote_as: 65400
+      - peer: crpd-02
+        ip_address: 172.31.1.7
+        remote_as: 65400

@@ -4,4 +4,8 @@
 {% include "./network-instance.json.j2" %}
 ,
 {% include "./underlay_policy.json.j2" %}
+,
+{% if inventory_hostname in groups['leafs'] %}
+{% include "./vxlan-interface.json.j2" %}
+{% endif %}
 }

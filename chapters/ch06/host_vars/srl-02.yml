@@ -10,9 +10,9 @@ interfaces:
     ip_address: "192.168.11.1/30"
     description: "LEAF-TO-SPINE-SRL-02-e1/3.0"
     vrf: "default"
-  # ethernet-1/2:
-  #   unit: 0
-  #   description: "LEAF-TO-CLIENT1-ETH1"
+  ethernet-1/2:
+    unit: 0
+    description: "LEAF-TO-CLIENT1-ETH1"
   system0:
     unit: 0
     ip_address: "10.20.0.1/32"
