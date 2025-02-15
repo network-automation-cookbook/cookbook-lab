@@ -1,4 +1,3 @@
-{% for group_name in bgp['peer_groups'] %}
           "autonomous-system": {{ bgp['asn'] }},
           "router-id": "{{ interfaces['system0']['ip_address'] | split('/') | first }}",
           "afi-safi": [
@@ -8,6 +7,7 @@
             }
           ],
           "group": [
+{% for group_name, peer_group_peers in bgp['peer_groups'].items() %}
             {%     if 'overlay' in group_name %}
             {
               "group-name": "{{ group_name }}",
@@ -35,26 +35,27 @@
                 "minimum-advertisement-interval": 1
               }
             },
-            {% endif %}
+            {% else %}
             {
               "group-name": "{{ group_name }}",
+              "peer-as": {{ bgp['peer_groups']['underlay'][0]['remote_as'] }},
               "export-policy": [
                 "all"
               ],
               "import-policy": [
                 "all"
               ]
-            }
+            }{{ "," if not loop.last else "" }}
+            {% endif %}
+          {% endfor %}
           ],
           "neighbor": [
-   {% for group_name, peer_group_peers in bgp['peer_groups'].items() %}
-   {%     for bgp_peer in peer_group_peers %}
+  {% for group_name, peer_group_peers in bgp['peer_groups'].items() %}
+   {% for bgp_peer in peer_group_peers %}
             {
               "peer-address": "{{ bgp_peer['ip_address'] }}",
-              "peer-as": {{ bgp_peer['remote_as'] }},
               "peer-group": "{{ group_name }}"
             },
-   {%     endfor %}
    {% endfor %}
-{% endfor %}
+  {% endfor %}
           ]
