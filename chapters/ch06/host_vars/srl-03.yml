@@ -26,3 +26,4 @@ bgp:
       - peer: srl-02
         ip_address: 10.20.0.1
         remote_as: 100
+        local: 10.20.0.2
