@@ -1,5 +1,5 @@
 ---
-- name: "BUILD CONFIGS FOR JUNIPER"
+- name: "DEPLOY CONFIGS FOR JUNIPER"
   hosts: "juniper_crpd"
   tasks:
     - name: "DEPLOY ADVANCED CONFIG"
