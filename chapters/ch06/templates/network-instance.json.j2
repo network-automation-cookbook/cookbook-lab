@@ -24,9 +24,11 @@
       "type": "mac-vrf",
       "admin-state": "enable",
       "interface": [
+        {% if interfaces['ethernet-1/2'] is defined %}
         {
           "name": "ethernet-1/2.0"
         }
+        {% endif %}
       ],
       "vxlan-interface": [
         {

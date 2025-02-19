@@ -76,4 +76,4 @@ topology:
 
     # server links
     - endpoints: ["client1:eth1", "srl-02:e1-2"]
-    - endpoints: ["client2:eth1", "ceos-03:eth2"]
+    - endpoints: ["client2:eth1", "ceos-02:eth2"]
