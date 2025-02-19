@@ -1,0 +1,20 @@
+---
+- name: "Retrieve Learned MACs from Leaf Switches"
+  hosts: "leafs"
+  vars_files:
+    - srl_secret.yml
+  tasks:
+    - name: "Learned Mac-Table for vrf-1"
+      nokia.srlinux.cli:
+        commands: "show network-instance vrf-1 bridge-table mac-table all"
+      register: show_macs
+    - ansible.builtin.set_fact:
+        mac_table: "{{ show_macs['result'][0]['Network'] }}"
+    - name: "Assert Mac-Table is Accurate"
+      ansible.builtin.assert:
+        that: item['Address'] == '00:C1:AB:00:00:01'
+        fail_msg: "MAC:'00:C1:AB:00:00:01' is NOT in the Mac Table"
+        success_msg: "MAC:'00:C1:AB:00:00:01' is learned in the Mac Table"
+      when: mac_table[0]['Mac table'] is defined
+      loop: "{{ mac_table[0]['Mac table'] }}"
+      delegate_to: localhost

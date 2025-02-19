@@ -1,0 +1,32 @@
+---
+interfaces:
+  # mgmt0:
+  #   unit: 0
+  #   ip_address: "198.51.100.32/24"
+  #   description: "CLAB-MGMT-NETWORK"
+  #   vrf: "default"
+  ethernet-1/1:
+    unit: 0
+    ip_address: "192.168.11.1/30"
+    description: "LEAF-TO-SPINE-SRL-02-e1/3.0"
+    vrf: "default"
+  ethernet-1/2:
+    unit: 0
+    description: "LEAF-TO-CLIENT1-ETH1"
+  system0:
+    unit: 0
+    ip_address: "10.20.0.1/32"
+    description: "LOOPBACK FOR ROUTER ID"
+    vrf: "default"
+bgp:
+  asn: 65101
+  peer_groups:
+    underlay:
+      - peer: srl-01
+        ip_address: 192.168.11.2
+        remote_as: 65200
+    overlay:
+      - peer: srl-03
+        ip_address: 10.20.0.2
+        remote_as: 100
+        local: 10.20.0.1

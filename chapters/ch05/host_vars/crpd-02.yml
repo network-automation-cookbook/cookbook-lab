@@ -1,0 +1,30 @@
+---
+interfaces:
+  Eth0:
+    ip_address: "198.51.100.22/24"
+    description: "CLAB-MGMT-NETWORK"
+  Eth1:
+    ip_address: "172.31.2.7/31"
+    description: "CORE-TO-CAMPUS-SRL-01-ETH1/2"
+  Eth2:
+    ip_address: "172.31.1.7/31"
+    description: "CORE-TO-DC-CEOS-01-ETH2"
+  Eth3:
+    ip_address: "10.0.0.1/31"
+    description: "CORE-TO-CORE-CRPD-01-ETH3"
+  Lo0:
+    ip_address: "10.200.1.2/32"
+    description: "LOOPBACK-FOR-ROUTER-ID"
+bgp:
+  asn: 65400
+  peer_groups:
+    ebgp-peer-dc:
+      - peer: ceos-01
+        ip_address: 172.31.1.6
+        local_address: 172.31.1.7
+        remote_as: 65100
+    ebgp-peer-campus:
+      - peer: srl-01
+        ip_address: 172.31.2.6
+        local_address: 172.31.2.7
+        remote_as: 65200

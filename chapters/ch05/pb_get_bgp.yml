@@ -1,0 +1,15 @@
+---
+- name: "Collect BGP and Parse XML with parse_xml"
+  hosts: "juniper_crpd"
+  tasks:
+    - name: "Collect BGP Neighbors"
+      junipernetworks.junos.junos_command:
+        commands: "show bgp neighbor"
+        display: "xml"
+      register: "output"
+    - name: "Debug XML Output"
+      ansible.builtin.debug:
+        msg: "{{ output['stdout'][0] }}"
+    - name: "Use parse_xml to transform XML to JSON"
+      ansible.builtin.debug:
+        msg: "{{ output['stdout'][0] | ansible.netcommon.parse_xml('specs/show_bgp_spec.yml') }}"

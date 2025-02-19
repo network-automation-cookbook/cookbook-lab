@@ -1,0 +1,22 @@
+---
+- name: "Collect and Validate Arista DC Fabric Facts"
+  hosts: "arista_ceos"
+  tasks:
+    - name: "Collect Arista Device Facts"
+      arista.eos.eos_facts:
+        gather_subset: all
+
+    - name: "Validate all DC Fabric Interface are Operational"
+      ansible.builtin.assert:
+        that:
+          - ansible_net_interfaces[item].lineprotocol == 'up'
+        fail_msg: "Interface {{item}} is not Operational "
+      loop: "{{ interfaces.keys() | list }}"
+
+    - name: "Validate all DC Fabric Interface a have the Correct IP"
+      ansible.builtin.assert:
+        that:
+          - ansible_net_interfaces[item].ipv4.address == interfaces[item]['ip_address'].split('/')[0]
+        fail_msg: "Interface {{item}} has Wrong IP Address"
+      when: interfaces[item]['ip_address'] is defined
+      loop: "{{ interfaces.keys() | list }}"

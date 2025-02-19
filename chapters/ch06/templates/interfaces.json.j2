@@ -1,0 +1,37 @@
+  "interface": [
+{% for name, int_details in interfaces.items() %}
+    {
+      "name": "{{ name }}",
+      {% if int_details['ip_address'] is not defined %}
+      "vlan-tagging": true,
+      {% endif %}
+      "description": "{{ int_details['description'] }}",
+      "admin-state": "enable",
+      "subinterface": [
+        {
+          "index": "{{ int_details['unit'] | int }}",
+          "admin-state": "enable",
+          {% if int_details['ip_address'] is defined %}
+          "ipv4": {
+            "admin-state": "enable",
+            "address": [
+              {
+                "ip-prefix": "{{ int_details['ip_address'] | default('') }}"
+              }
+            ]
+          }
+          {% else %}
+          "type": "bridged",
+          "admin-state": "enable",
+          "vlan": {
+            "encap": {
+              "untagged": {
+              }
+            }
+          }
+        {% endif %}
+        }
+      ]
+    }{{ "," if not loop.last else "" }}
+  {% endfor %}
+  ]
