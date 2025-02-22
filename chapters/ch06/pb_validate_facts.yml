@@ -1,0 +1,22 @@
+---
+- name: "Collect and Validate Juniper Core Facts"
+  hosts: "nokia_srlinux"
+  vars_files:
+    - srl_secret.yml
+  tasks:
+    - name: "Collect BGP Facts"
+      nokia.srlinux.get:
+        paths:
+          - path: "/network-instance[name=default]/protocols/bgp/neighbor"
+            datastore: state
+            yang_models: srl
+      register: bgp_information
+    - ansible.builtin.set_fact:
+        bgp_neighbors: "{{ bgp_information['result'] | map(attribute='neighbor') | flatten }}"
+    - name: "Validate BGP Neighbor Exists"
+      ansible.builtin.assert:
+        that: "{{ item['session-state'] == 'established' }}"
+        quiet: true
+      loop: "{{ bgp_neighbors }}"
+      loop_control:
+        label: "{{ item['peer-address'] }} is established"

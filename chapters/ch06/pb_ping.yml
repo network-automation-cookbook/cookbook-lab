@@ -1,0 +1,8 @@
+---
+- name: "Check Connectivity"
+  hosts: "nokia_srlinux"
+  vars_files:
+    - srl_secret.yml
+  tasks:
+    - name: "Check reachability with Ansible Ping"
+      ansible.builtin.ping:

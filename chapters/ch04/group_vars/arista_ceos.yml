@@ -1,0 +1,8 @@
+---
+ansible_network_os: "arista.eos.eos"
+ansible_connection: "ansible.netcommon.httpapi"
+ansible_httpapi_use_ssl: "yes"
+ansible_httpapi_validate_certs: "no"
+ansible_user: "ansible"
+ansible_password: "ansible123"
+ansible_httpapi_ciphers: AES256-SHA:DHE-RSA-AES256-SHA:AES128-SHA:DHE-RSA-AES128-SHA

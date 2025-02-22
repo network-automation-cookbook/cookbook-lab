@@ -1,0 +1,63 @@
+  "network-instance": [
+    {
+      "name": "default",
+      "interface": [
+{% for name, int_details in interfaces.items() %}
+{% if int_details['vrf'] is defined %}
+{% if int_details['vrf'] == 'default' %}
+        {
+          "name": "{{ name }}.{{ int_details['unit'] }}"
+        }{{ "," if not loop.last else "" }}
+{% endif %}
+{% endif %}
+{% endfor %}
+      ],
+      "protocols": {
+        "bgp": {
+          {% include "./bgp.json.j2" %}
+
+        }
+      }
+    }{% if inventory_hostname in groups['leafs'] %},
+    {
+      "name": "vrf-1",
+      "type": "mac-vrf",
+      "admin-state": "enable",
+      "interface": [
+        {% if interfaces['ethernet-1/2'] is defined %}
+        {
+          "name": "ethernet-1/2.0"
+        }
+        {% endif %}
+      ],
+      "vxlan-interface": [
+        {
+          "name": "vxlan1.1"
+        }
+      ],
+      "protocols": {
+        "bgp-evpn": {
+          "bgp-instance": [
+            {
+              "id": 1,
+              "admin-state": "enable",
+              "vxlan-interface": "vxlan1.1",
+              "evi": 111
+            }
+          ]
+        },
+        "bgp-vpn": {
+          "bgp-instance": [
+            {
+              "id": 1,
+              "route-target": {
+                "export-rt": "target:100:111",
+                "import-rt": "target:100:111"
+              }
+            }
+          ]
+        }
+      }
+    }
+    {% endif %}
+  ]

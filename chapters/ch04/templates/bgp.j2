@@ -1,0 +1,42 @@
+router bgp {{ bgp['asn'] }}
+   router-id {{ interfaces['Loopback0']['ip_address'] | split('/') | first }}
+   maximum-paths 2
+   bgp bestpath tie-break router-id
+   {% for group_name in bgp['peer_groups'] %}
+   neighbor {{ group_name | upper }} peer group
+   neighbor {{ group_name | upper }} description "Peer Group for {{ group_name | title }}"
+   neighbor {{ group_name | upper }} graceful-restart-helper
+   neighbor {{ group_name | upper }} send-community extended
+   neighbor {{ group_name | upper }} maximum-routes 100000 warning-only
+   {%     if 'overlay' in group_name %}
+   neighbor {{ group_name | upper }} update-source Loopback0
+   neighbor {{ group_name | upper }} ebgp-multihop 2
+   {%     endif %}
+   {% endfor %}
+   {% for group_name, peer_group_peers in bgp['peer_groups'].items() %}
+   {%     for bgp_peer in peer_group_peers %}
+   neighbor {{ bgp_peer['ip_address'] }} peer group {{ group_name | upper }}
+   neighbor {{ bgp_peer['ip_address'] }} remote-as {{ bgp_peer['remote_as'] }}    
+   {%     endfor %}
+   {% endfor %}
+   redistribute connected route-map loopback
+   !
+   {% if inventory_hostname in groups['leafs'] %}
+   {% include './bgp_vlan.j2' %}
+   {% endif %}
+   !
+   {% if bgp['peer_groups']['overlay'] is defined %}   
+   address-family evpn
+      neighbor OVERLAY activate
+   !
+   {% endif %}
+   address-family ipv4
+   {% if bgp['peer_groups']['core'] is defined  %}   
+      neighbor CORE activate
+   {% endif %}
+   {% if bgp['peer_groups']['underlay'] is defined  %}   
+      neighbor UNDERLAY activate
+      neighbor UNDERLAY route-map loopback out
+   {% endif %}
+!
+end
