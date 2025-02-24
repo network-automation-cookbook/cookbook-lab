@@ -17,8 +17,14 @@
             "address": [
               {
                 "ip-prefix": "{{ int_details['ip_address'] | default('') }}"
+                {% if 'irb' in name %}
+                ,"anycast-gw": true
+                {% endif %}
               }
             ]
+          {% if 'irb' in name %}
+          {% include "./irb-interfaces.json.j2" %}
+          {% endif %}
           }
           {% else %}
           "type": "bridged",

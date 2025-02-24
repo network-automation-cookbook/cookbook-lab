@@ -1,2 +1,5 @@
 set protocols ospf area 0.0.0.0 interface eth3 interface-type p2p
 set protocols ospf area 0.0.0.0 interface lo.0 interface-type nbma
+set policy-options policy-statement into-ospf term BGP from protocol bgp
+set policy-options policy-statement into-ospf term BGP then accept
+set protocols ospf export into-ospf

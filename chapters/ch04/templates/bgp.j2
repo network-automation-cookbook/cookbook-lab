@@ -19,7 +19,7 @@ router bgp {{ bgp['asn'] }}
    neighbor {{ bgp_peer['ip_address'] }} remote-as {{ bgp_peer['remote_as'] }}    
    {%     endfor %}
    {% endfor %}
-   redistribute connected route-map loopback
+   redistribute connected route-map connected
    !
    {% if inventory_hostname in groups['leafs'] %}
    {% include './bgp_vlan.j2' %}
@@ -36,7 +36,7 @@ router bgp {{ bgp['asn'] }}
    {% endif %}
    {% if bgp['peer_groups']['underlay'] is defined  %}   
       neighbor UNDERLAY activate
-      neighbor UNDERLAY route-map loopback out
+      neighbor UNDERLAY route-map connected out
    {% endif %}
 !
 end

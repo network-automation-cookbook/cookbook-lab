@@ -15,7 +15,6 @@
       "protocols": {
         "bgp": {
           {% include "./bgp.json.j2" %}
-
         }
       }
     }{% if inventory_hostname in groups['leafs'] %},

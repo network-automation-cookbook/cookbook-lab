@@ -1,0 +1,21 @@
+            ,"arp": {
+              "learn-unsolicited": true,
+              "proxy-arp": true,
+              "host-route": {
+                "populate": [
+                  {
+                    "route-type": "dynamic"
+                  }
+                ]
+              },
+              "evpn": {
+                "advertise": [
+                  {
+                    "route-type": "dynamic"
+                  }
+                ]
+              }
+            }
+          },
+          "anycast-gw": {
+            "anycast-gw-mac": "00:00:5E:00:53:00"

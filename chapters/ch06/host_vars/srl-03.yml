@@ -15,6 +15,11 @@ interfaces:
     ip_address: "10.20.0.2/32"
     description: "LOOPBACK FOR ROUTER ID"
     vrf: "default"
+  irb0:
+    unit: 111
+    ip_address: "192.168.0.254/24"
+    description: "ANYCAST GATEWAY"
+    vrf: "default"
 bgp:
   asn: 65102
   peer_groups:
