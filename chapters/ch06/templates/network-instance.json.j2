@@ -3,19 +3,18 @@
       "name": "default",
       "interface": [
 {% for name, int_details in interfaces.items() %}
-{% if int_details['vrf'] is defined %}
-{% if int_details['vrf'] == 'default' %}
+{%     if int_details['vrf'] is defined %}
+{%         if int_details['vrf'] == 'default' %}
         {
           "name": "{{ name }}.{{ int_details['unit'] }}"
         }{{ "," if not loop.last else "" }}
-{% endif %}
-{% endif %}
+{%         endif %}
+{%     endif %}
 {% endfor %}
       ],
       "protocols": {
         "bgp": {
           {% include "./bgp.json.j2" %}
-
         }
       }
     }{% if inventory_hostname in groups['leafs'] %},
@@ -24,11 +23,11 @@
       "type": "mac-vrf",
       "admin-state": "enable",
       "interface": [
-        {% if interfaces['ethernet-1/2'] is defined %}
+        {%     if interfaces['ethernet-1/2'] is defined %}
         {
           "name": "ethernet-1/2.0"
         }
-        {% endif %}
+        {%     endif %}
       ],
       "vxlan-interface": [
         {

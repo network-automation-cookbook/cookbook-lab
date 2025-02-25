@@ -2,6 +2,9 @@
 interface {{ name }}
   description {{ int_details['description'] }}
   {% if int_details['ip_address'] is defined %}
+  {%     if 'Vlan' in name %}
+  ip address virtual {{ int_details['ip_address'] }}
+  {% else %}
   {%     if 'Management' not in name %}
   {%         if 'Loopback' not in name %}
   no switchport
@@ -12,6 +15,7 @@ interface {{ name }}
   {% if int_details['vlan'] is defined %}
   switchport mode access
   switchport access vlan {{ int_details['vlan'] }}
+  {%     endif %}
   {% endif %}
 !
 {% endfor %}

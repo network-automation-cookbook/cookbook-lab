@@ -12,6 +12,9 @@ interfaces:
   Management0:
     ip_address: "198.51.100.12/24"
     description: "clab mgmt network"
+  Vlan10:
+    ip_address: 192.168.20.254/24
+    description: "Virtual Address Vlan10"
 bgp:
   asn: 65001
   peer_groups:
