@@ -1,0 +1,6 @@
+---
+ansible_network_os: "arista.eos.eos"
+ansible_connection: "ansible.netcommon.network_cli"
+ansible_user: "admin"
+ansible_password: "admin"
+ansible_become: yes
