@@ -98,3 +98,5 @@ make awx-instance-password
 
 - **Configuration Variables:**  
   You can adjust configuration variables such as `KIND_CLUSTER_NAME`, `KIND_CONFIG_FILE`, `AWX_INSTANCE_FILE`, and `HELM_CHART_VERSION` in the Makefile as needed.
+
+- **Credits to** https://github.com/josephaw1022/AwxKindQuickStart
