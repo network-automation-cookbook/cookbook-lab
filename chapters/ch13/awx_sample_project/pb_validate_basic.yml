@@ -1,0 +1,14 @@
+---
+- name: "Collect and Validate Arista DC Fabric Facts"
+  hosts: "arista_ceos"
+  tasks:
+    - name: "Collect Arista Device Facts"
+      arista.eos.eos_facts:
+        gather_subset: all
+    - name: "Extract configured DNS servers"
+      ansible.builtin.set_fact:
+        configured_dns: "{{ ansible_net_config | regex_findall('ip name-server vrf default (.+)') }}"
+    - name: "Validate DNS Configuration"
+      ansible.builtin.fail:
+        msg: "Configured DNS servers {{ configured_dns }} do not match expected {{ global['dns'] }}"
+      when: configured_dns | sort != global['dns'] | sort
