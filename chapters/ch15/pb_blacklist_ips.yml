@@ -1,0 +1,20 @@
+---
+- name: Block Blacklisted IPs in Ubuntu using iptables
+  hosts: all
+  become: yes
+  tasks:
+    - name: Fetch blacklisted IPs from a public URL
+      uri:
+        url: "https://www.spamhaus.org/drop/drop.txt"
+        method: GET
+        return_content: yes
+      register: blacklist_response
+
+    - name: Parse the list of IPs
+      set_fact:
+        blacklisted_ips: "{{ blacklist_response.content | regex_findall('^\\d+\\.\\d+\\.\\d+\\.\\d+(?:/\\d+)?', multiline=True) }}"
+
+    - name: Block each blacklisted IP using iptables
+      ansible.builtin.command:
+        cmd: "iptables -A INPUT -s {{ item }} -j DROP"
+      loop: "{{ blacklisted_ips }}"
