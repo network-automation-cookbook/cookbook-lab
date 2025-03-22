@@ -66,7 +66,10 @@ resource "null_resource" "ansible" {
   depends_on = [aws_instance.ubuntu]
 
   provisioner "local-exec" {
-    command = "ansible all -i \"$(terraform output -raw public_ip),\" -u ubuntu --private-key /tmp/cookbook-key.pem -m ping"
+    command = <<EOT
+      sleep 10
+      ANSIBLE_HOST_KEY_CHECKING=False ansible all -i ${aws_instance.ubuntu.public_ip}, -u ubuntu --private-key /tmp/cookbook-key.pem -m ping
+    EOT
   }
 }
 
@@ -74,6 +77,8 @@ resource "null_resource" "blacklist_ips" {
   depends_on = [aws_instance.ubuntu]
 
   provisioner "local-exec" {
-    command = "ansible-playbook -i \"$(terraform output -raw public_ip),\" -u ubuntu --private-key /tmp/cookbook-key.pem pb_blacklist_ips.yml"
+    command = <<EOT
+      ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${aws_instance.ubuntu.public_ip}, -u ubuntu --private-key /tmp/cookbook-key.pem pb_blacklist_ips.yml
+    EOT
   }
 }
