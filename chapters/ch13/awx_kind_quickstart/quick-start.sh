@@ -7,7 +7,7 @@ DEFAULT_HOST_PORT=8383
 DEFAULT_EDA_HOST_PORT=8384
 
 # Parse command-line options (-c for cluster name, -p for host port)
-while getopts "c:p:" opt; do
+while getopts "c:p:e:" opt; do
   case ${opt} in
     c)
       CLUSTER_NAME="$OPTARG"
