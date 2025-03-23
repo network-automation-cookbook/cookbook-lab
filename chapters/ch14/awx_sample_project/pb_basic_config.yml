@@ -1,0 +1,9 @@
+---
+- name: "Configure DNS"
+  hosts: arista_ceos
+  tasks:
+    - name: "Configure Basic Configuration on Arista Fabric"
+      arista.eos.eos_config:
+        lines:
+          - "ip name-server {{ item }}"
+      loop: "{{ global['dns'] }}"

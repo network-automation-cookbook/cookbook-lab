@@ -1,0 +1,18 @@
+---
+- name: "Watch for new Nautobot changelog entries"
+  hosts: "localhost"
+  sources:
+    - networktocode.nautobot.nautobot_changelog:
+        instance: "http://159.223.200.74:8080"
+        token: "0123456789abcdef0123456789abcdef01234567"
+        interval: 5
+        query: ""
+
+  rules:
+    - name: "Find Interface based changelogs"
+      condition: "event.mac_address is defined"
+      action:
+        run_job_template:
+          name: "Interface Change"
+           organization: "Default"
+
