@@ -4,9 +4,10 @@ set -e
 # Default values
 DEFAULT_CLUSTER_NAME="awx-cluster-demo"
 DEFAULT_HOST_PORT=8383
+DEFAULT_EDA_HOST_PORT=8384
 
 # Parse command-line options (-c for cluster name, -p for host port)
-while getopts "c:p:" opt; do
+while getopts "c:p:e:" opt; do
   case ${opt} in
     c)
       CLUSTER_NAME="$OPTARG"
@@ -14,8 +15,11 @@ while getopts "c:p:" opt; do
     p)
       HOST_PORT="$OPTARG"
       ;;
+    e)
+      EDA_HOST_PORT="$OPTARG"
+      ;;
     *)
-      echo "Usage: $0 [-c cluster_name] [-p host_port]"
+      echo "Usage: $0 [-c cluster_name] [-p host_port] [-e eda_host_port]"
       exit 1
       ;;
   esac
@@ -25,9 +29,11 @@ shift $((OPTIND - 1))
 # Set variables to default values if not provided
 CLUSTER_NAME=${CLUSTER_NAME:-$DEFAULT_CLUSTER_NAME}
 HOST_PORT=${HOST_PORT:-$DEFAULT_HOST_PORT}
+EDA_HOST_PORT=${EDA_HOST_PORT:-$DEFAULT_EDA_HOST_PORT}
 
 echo "Using cluster name: $CLUSTER_NAME"
 echo "Using host port: $HOST_PORT"
+echo "Using eda host port: $EDA_HOST_PORT"
 
 # Inline Kind cluster configuration with variable expansion
 KIND_CONFIG=$(cat <<EOF
@@ -38,6 +44,9 @@ nodes:
   extraPortMappings:
   - containerPort: 30000
     hostPort: ${HOST_PORT}
+    protocol: TCP
+  - containerPort: 30001
+    hostPort: ${EDA_HOST_PORT}
     protocol: TCP
 EOF
 )
