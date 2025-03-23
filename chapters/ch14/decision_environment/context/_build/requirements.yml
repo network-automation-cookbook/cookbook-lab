@@ -1,0 +1,6 @@
+collections:
+- name: networktocode.nautobot
+- name: community.general
+- name: ansible.utils
+- name: ansible.eda
+- name: arista.eos
