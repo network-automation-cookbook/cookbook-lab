@@ -10,7 +10,7 @@ terraform {
 provider "awx" {
     hostname = "http://cookbook-lab:8383"
     username = "admin"
-    password = "Rwj0Wwo7BXu3ijTAiFairc9ZDDxDcpC2"
+    password = "your-passord"
 }
 
 provider "aws" {
