@@ -1,0 +1,20 @@
+---
+- name: "ANALYZE BATFISH SNAPSHOT FOR ARISTA DC CONFIGS"
+  gather_facts: false
+  hosts: "localhost"
+  roles:
+    - batfish.base
+  tasks:
+    - name: "SETUP CONNECTION TO BATFISH SERVICE"
+      bf_session:
+        host: "localhost"
+        name: "local_batfish"
+      run_once: "yes"
+      register: "bf_session"
+    - name: "RETRIEVE BATFISH FACTS"
+      bf_extract_facts:
+        output_directory: "analysis_folder/bf_facts"
+        network: "arista_dc_network"
+        snapshot: "arista_dc_snapshot"
+      run_once: yes
+      register: bf_facts

@@ -1,0 +1,24 @@
+---
+- name: "CREATE SESSION AND INITIALIZE SNAPSHOT"
+  gather_facts: false
+  hosts: "localhost"
+  roles:
+    - batfish.base
+  tasks:
+    - name: "SETUP CONNECTION TO BATFISH SERVICE"
+      bf_session:
+        host: "localhost"
+        name: "local_batfish"
+      run_once: "yes"
+      register: "bf_session"
+    - name: "INITIALIZE THE NETWORK SNAPSHOT"
+      bf_init_snapshot:
+          network: "arista_dc_network"
+          snapshot: "arista_dc_snapshot"
+          snapshot_data: "."
+          overwrite: true
+      run_once: "yes"
+      register: bf_snapshot
+    - name: "PRINT OUT DEBUG OF THE SNAPSHOT"
+      ansible.builtin.debug:
+        var: bf_snapshot
