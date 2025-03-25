@@ -1,0 +1,15 @@
+---
+- name: "PREP CONFIGS FOR BATFISH"
+  gather_facts: false
+  hosts: "localhost"
+  tasks:
+    - name: "CREATE REQUIRED CONFIGS DIRECTORY"
+      ansible.builtin.file:
+        path: "configs"
+        state: "directory"
+      run_once: yes
+    - name: "COPY CH04 GENERATED CONFIGS INTO CH11 CONFIGS DIRECTORY"
+      ansible.builtin.copy:
+        src: "/root/cookbook-lab/chapters/ch04/output/config/"
+        dest: "/root/cookbook-lab/chapters/ch11/configs/"
+      delegate_to: "localhost"

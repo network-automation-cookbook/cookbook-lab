@@ -1,0 +1,26 @@
+---
+- name: "CREATE SESSION AND INITIALIZE SNAPSHOT"
+  gather_facts: false
+  hosts: "localhost"
+  roles:
+    - batfish.base
+  tasks:
+    - name: "SETUP CONNECTION TO BATFISH SERVICE"
+      bf_session:
+        host: "localhost"
+        name: "local_batfish"
+      run_once: "yes"
+      register: "bf_session"
+    - name: "INITIALIZE THE NETWORK SNAPSHOT"
+      bf_init_snapshot:
+          network: "ch11_network"
+          snapshot: "ch11_snapshot"
+          snapshot_data: "./undefined_references"
+          overwrite: true
+      run_once: "yes"
+      register: bf_snapshot
+    - name: "VALIDATE NO UNDEFINED REFERENCES EXIST"
+      bf_assert:
+        assertions:
+          - type: assert_no_undefined_references
+            name: Confirm we have no undefined references
