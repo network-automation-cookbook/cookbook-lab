@@ -3,7 +3,7 @@ prefix: "" # Empty string to not add a prefix to the containers
 
 mgmt:
   network: kind
-  ipv4-subnet: 172.20.0.0/16
+  ipv4-subnet: 172.18.0.0/16
 
 topology:
   kinds:
@@ -15,15 +15,13 @@ topology:
   nodes:
     ceos-01:
       kind: arista_ceos
-      mgmt-ipv4: 172.20.100.11
+      mgmt-ipv4: 172.18.100.11
     ceos-02:
       kind: arista_ceos
-      mgmt-ipv4: 172.20.100.12
+      mgmt-ipv4: 172.18.100.12
     ceos-03:
       kind: arista_ceos
-      mgmt-ipv4: 172.20.100.13
-
-
+      mgmt-ipv4: 172.18.100.13
   links:
     # Arista connections
     - endpoints: ["ceos-01:eth3", "ceos-02:eth1"]

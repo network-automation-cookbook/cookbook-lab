@@ -1,0 +1,16 @@
+---
+- name: "Watch for new Nautobot changelog entries"
+  hosts: "localhost"
+  sources:
+    - networktocode.nautobot.nautobot_changelog:
+        instance: "https://demo.nautobot.com"
+        token: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        interval: 5
+        query: ""
+
+  rules:
+    - name: "New changelog created"
+      condition: "event.meta is defined"
+      action:
+        print_event:
+          pretty: true

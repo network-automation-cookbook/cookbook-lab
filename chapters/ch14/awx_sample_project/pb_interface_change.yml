@@ -1,0 +1,11 @@
+---
+- name: "CONFIGURE PROPER INTERFACE STATUS"
+  hosts: ceos-01
+  tasks:
+    - name: "Merge interface admin state"
+      arista.eos.eos_interfaces:
+        config:
+          - name: "{{ ansible_eda.event.name }}"
+            enabled: "{{ ansible_eda.event.enabled }}"
+        state: merged
+
