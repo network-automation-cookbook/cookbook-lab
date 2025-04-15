@@ -1,6 +1,6 @@
 # Batteries Included Scenario
 
-The goal of this lab scenario is to showcase a comprehensive observability stack using open-source tools. It integrates most of the configurations and system designs provided in the chapters of the book, offering a practical, hands-on environment to explore these tools in action.
+The goal of this lab scenario is to showcase a comprehensive network automation stack using open-source tools. It integrates most of the configurations and system designs provided in the chapters of the book, offering a practical, hands-on environment to explore these tools in action.
 
 - [Batteries Included Scenario](#batteries-included-scenario)
   - [High-Level Overview](#high-level-overview)
@@ -46,10 +46,6 @@ labcli lab prepare --scenario batteries-included
 
 The following are sections for each components describing their role and how to interact with them. An important thing to highlight is that you will need to get the necessary credentials for the lab environment stored in your `.env` file. When in search of the credentials look there.
 
-### Network Devices (`cEOS`)
-
-The `cEOS` devices (`cEOS-01` and `cEOS-02`) are simulated network routers running in Containerlab. These devices generate metrics and logs, which are collected by the observability stack. They serve as the data sources for the lab, mimicking real-world network equipment.
-
 #### Checking the Containerlab Topology
 
 To view the current network topology and ensure the devices are running, use the following command:
@@ -81,8 +77,6 @@ configure
 interface Ethernet2
 no shutdown
 ```
-
-This command shuts down the `Ethernet2` interface, which will trigger alerts and logs that can be observed through the observability stack.
 
 #### Commands to Interact with the Devices
 
@@ -128,14 +122,7 @@ Before populating Nautobot with data from your network devices, ensure that the 
    nautobot            docker.io/networktocode/nautobot:2.2-py3.10    "/docker-entrypoint.…"   nautobot            About a minute ago   Up About a minute (health: starting)   0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 0.0.0.0:8443->8443/tcp, :::8443->8443/tcp
    ```
 
-2. **Monitor the Meta Monitoring Dashboard:**
-   The Meta Monitoring dashboard in Grafana provides an overview of the
-   health of your services. Access it via `http://<lab-machine-address>:3000/dashboards`.
-
-   If Nautobot is still starting, the dashboard will reflect this status. Here is an example of what you might see:
-   ![Meta Monitoring Dashboard](./../../pics/batteries-included-grafana.png)
-
-3. **Review the `nautobot` Logs:**
+2. **Review the `nautobot` Logs:**
    You can follow the logs of the Nautobot container to monitor its startup process. Use the command:
 
    ```bash
@@ -144,14 +131,6 @@ Before populating Nautobot with data from your network devices, ensure that the 
 
    Wait until you see the message `Nautobot initialized!`, which confirms that Nautobot is ready for use.
 
-Once Nautobot is ready, you can populate it with data from your network devices by running the following command:
-
-```bash
-labcli utils load-nautobot
-```
-
-This command will load the necessary data into Nautobot, making it fully operational and ready for use with the other components in your observability stack.
-
 #### Accessing Nautobot
 
 You can access Nautobot via its web interface:
@@ -159,25 +138,6 @@ You can access Nautobot via its web interface:
 ```
 http://<lab-machine-address>:8080
 ```
-
-Login to explore network device inventories, view relationships, and check the data being fed into Grafana.
-
-#### Enriching Data
-
-Nautobot can be queried using its GraphQL API. For example, to enrich device data in Grafana:
-
-```graphql
-{
-  devices {
-    name
-    site {
-      name
-    }
-  }
-}
-```
-
-This query will return device names and their corresponding sites, which can then be used to add context to your Grafana visualizations, enhancing the insights you can derive from your observability data.
 
 ---
 
