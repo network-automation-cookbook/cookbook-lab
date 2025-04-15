@@ -2,7 +2,7 @@
 
 # Network Automation Cookbook Lab
 
-This repository contains the resources for building and managing an network automation stack within a network lab environment, specifically designed for the "Network Automation Cookbook 2n edition" book.
+This repository contains the resources for building and managing an network automation stack within a network lab environment, specifically designed for the "Network Automation Cookbook 2nd edition" book.
 
 ## Requirements
 
