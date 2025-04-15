@@ -14,7 +14,7 @@
     - name: "droplet_size"
       prompt: "Enter the droplet size"
       private: false
-      default: "s-4vcpu-8gb"
+      default: "s-4vcpu-16gb-amd"
 
     - name: "droplet_region"
       prompt: "Enter the droplet region"

@@ -67,16 +67,16 @@ cp example.setup.env .setup.env
 cp example.env .env
 ```
 
-- The `.env` file contains the necessary variables to manage the instances for each scenario in the lab environment. This includes credentials for connecting to network devices to even parameters for accessing Grafana.
+- The `.env` file contains the necessary variables to manage the instances for each scenario in the lab environment. This includes credentials for connecting to network devices to even parameters for accessing Nautobot.
 - The `.setup.env` file holds the necessary variables to manage the creation, provisioning, and deletion of the DigitalOcean droplet. This file is only needed if you are using DigitalOcean to set up the lab environment.
 
 Next, we will go over the steps to populate some of these variables to set up the lab environment.
 
-### 5. Download the Arista cEOS images
+### 5. Download the Arista cEOS and Junos cRPD images
 
-The lab environment uses Arista cEOS container images. You need to register and download these images from the Arista website. Once registered, use this [link](https://www.arista.com/en/support/software-download) to search and download the images under "cEOS-lab" > "EOS-<version>" > "cEOS64-lab-<version>.tar.xz".
+The lab environment uses Arista cEOS and Junos cRPD container images. You need to register and download these images from the Arista website. Once registered, use this [link](https://www.arista.com/en/support/software-download) to search and download the images under "cEOS-lab" > "EOS-<version>" > "cEOS64-lab-<version>.tar.xz".
 
-Save the location of the downloaded file to `CEOS_IMAGE_PATH` under the `.setup.env` file. This will be used by Ansible to upload the image to your droplet.
+Save the location of the downloaded file to `CEOS_IMAGE_PATH` and `CRPD_IMAGE_PATH` under the `.setup.env` file. This will be used by Ansible to upload the image to your droplet.
 
 ### 6. Create a Digital Ocean API token
 
@@ -150,7 +150,7 @@ At this point, the droplet is fully set up with Docker, Containerlab, and the la
 
 ## Interacting with the Lab Scenarios
 
-Now, you can start exploring and interacting with your lab environment. It includes various network devices and observability stack components, each of which is accessible and manageable. For network devices, you can use SSH or other network management protocols to connect to them. This allows you to modify configurations, run diagnostic commands, and test different network setups.
+Now, you can start exploring and interacting with your lab environment. It includes various network devices and other stack components, each of which is accessible and manageable. For network devices, you can use SSH or other network management protocols to connect to them. This allows you to modify configurations, run diagnostic commands, and test different network setups.
 
 Here's an example of how to connect to an Arista cEOS network device using SSH. First, connect to the DigitalOcean droplet:
 
@@ -170,16 +170,6 @@ docker exec -it ceos-01 Cli
 ssh lab@ceos-01
 ```
 
-Regarding the observability stack components like Telegraf, Prometheus, Grafana, and others, you can interact with them primarily through their web interfaces, APIs, or command-line interfaces (if available). For example, to access the Prometheus web interface, open a web browser and navigate to the IP address of your droplet and the port on which your Prometheus service is running (`http://<droplet-ip-address>:9090`). You can then write queries such as `interface_admin_status` in the query panel.
-
-![Prometheus Web Interface](./../pics/prometheus-web-interface.png)
-
-Alternatively, you can connect to your Grafana instance by navigating to `http://<droplet-ip-address>:3000`. Use the credentials provided in the `.env` file to log in. Once logged in, go to "Dashboards" > "Device Health" to access a comprehensive dashboard that monitors your devices:
-
-![Grafana Device Health Dashboard](./../pics/grafana-device-dashboard.png)
-
-During your interaction with the environment, you might change configurations, experiment with different metrics, create alerts or visualizations, or simulate various network conditions to see how the observability stack responds.
-
 ### Connecting Visual Studio Code to Your DigitalOcean Droplet
 
 If you use [Visual Studio Code](https://code.visualstudio.com/) (VSCode), you can connect to your DigitalOcean droplet over SSH, allowing you to modify the lab environment directly. This setup is particularly useful if you're following along with the chapters of the book, as it enables you to configure, save, and run commands directly from the VSCode application.
@@ -194,7 +184,7 @@ If you use [Visual Studio Code](https://code.visualstudio.com/) (VSCode), you ca
 
    Copy and paste this command into VSCode's prompt.
 
-4. **Save the SSH Configuration**: Follow the prompts to save this new remote connection to your SSH configuration. Once connected, go to "Explorer" > "Open Folder," and navigate to your forked repository folder (`/root/network-observability-lab/`).
+4. **Save the SSH Configuration**: Follow the prompts to save this new remote connection to your SSH configuration. Once connected, go to "Explorer" > "Open Folder," and navigate to your forked repository folder (`/root/network-cookbook-lab/`).
 
 5. **Access Your Workspace**: You are now connected to your droplet and within your forked repository. Open the "Terminal" tab in VSCode and check the status of the `batteries-included` scenario by running the following command:
 

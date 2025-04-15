@@ -25,6 +25,8 @@ from labcli.utils.docker_utils import docker_ps, docker_destroy, docker_start
 # app.add_typer(lab_app, name="lab")
 
 app._add_completion = False
+setup_app = typer.Typer(help="Lab hosting machine setup related commands.", rich_markup_mode="rich")
+app.add_typer(setup_app, name="setup")
 
 load_dotenv(verbose=True, override=True, dotenv_path=Path("./.env"))
 ENVVARS = {**dotenv_values(".env"), **dotenv_values(".setup.env"), **os.environ}
@@ -133,7 +135,7 @@ def ansible_command(
     return exec_cmd
 
 
-@app.command(rich_help_panel="DigitalOcean", name="deploy")
+@setup_app.command(rich_help_panel="DigitalOcean", name="deploy")
 def deploy_droplet(
     verbose: Annotated[int, typer.Option("--verbose", "-v", count=True)] = 0,
     extra_vars: Annotated[
@@ -143,7 +145,7 @@ def deploy_droplet(
     """Create DigitalOcean Droplets.
 
     [u]Example:[/u]
-        [i]> labcli setup deploy[/i]
+        [i]> lab setup deploy[/i]
     """
 
     # Then create the droplets
@@ -174,7 +176,7 @@ def deploy_droplet(
         raise typer.Abort()
 
 
-@app.command(rich_help_panel="DigitalOcean", name="destroy")
+@setup_app.command(rich_help_panel="DigitalOcean", name="destroy")
 def destroy_droplet(
     verbose: Annotated[int, typer.Option("--verbose", "-v", count=True)] = 0,
     extra_vars: Annotated[
@@ -184,7 +186,7 @@ def destroy_droplet(
     """Destroy DigitalOcean Droplets.
 
     [u]Example:[/u]
-        [i]> labcli setup destroy[/i]
+        [i]> lab setup destroy[/i]
     """
     exec_cmd = ansible_command(
         playbook="destroy_droplet.yml",
@@ -200,12 +202,12 @@ def destroy_droplet(
         raise typer.Abort()
 
 
-@app.command(rich_help_panel="DigitalOcean", name="show")
+@setup_app.command(rich_help_panel="DigitalOcean", name="show")
 def show_droplet():
     """Show the DigitalOcean Droplet SSH command.
 
     [u]Example:[/u]
-        [i]> labcli setup list[/i]
+        [i]> lab setup list[/i]
     """
     exec_cmd = ansible_command(
         playbook="list_droplet.yml",

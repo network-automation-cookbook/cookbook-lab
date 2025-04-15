@@ -120,7 +120,7 @@
         dest: /tmp/cRPD.tgz
         mode: "0644"
 
-    - name: Laod CPRD container image
+    - name: Load CPRD container image
       ansible.builtin.command: docker load -i /tmp/cRPD.tgz
       register: crpd_load
       changed_when: crpd_load.rc != 0

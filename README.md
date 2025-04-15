@@ -1,14 +1,12 @@
-<!-- [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/network-observability/network-observability-lab?quickstart=1&devcontainer_path=.devcontainer%2Fbatteries-included%2Fdevcontainer.json) -->
-
- <!-- TODO: update accordingly to the book context  -->
+<!-- [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/network-cookbook-lab/network-cookbook-lab?quickstart=1&devcontainer_path=.devcontainer%2Fbatteries-included%2Fdevcontainer.json) -->
 
 # Network Automation Cookbook Lab
 
-This repository contains the resources for building and managing an observability stack within a network lab environment, specifically designed for the "Modern Network Observability" book. It includes scripts, configuration files, and documentation to set up and operate various observability tools like Prometheus, Grafana Loki, and others, helping you implement and learn about network observability practices in a practical, hands-on manner.
+This repository contains the resources for building and managing an network automation stack within a network lab environment, specifically designed for the "Network Automation Cookbook 2n edition" book.
 
 ## Requirements
 
-The lab environments are designed to set up a small network and an attached observability stack. Developed and tested on Debian-based systems, we provide **[setup](setup/README.md) documentation to guide** you through automatic setup on a DigitalOcean droplet. This process will provision, install dependencies, and configure the environment automatically. But if you want to host the lab environment, ensure the following:
+The lab environments are designed to set up a small network and an attached automation stack. Developed and tested on Debian-based systems, we provide **[setup](setup/README.md) documentation to guide** you through automatic setup on a DigitalOcean droplet. This process will provision, install dependencies, and configure the environment automatically. But if you want to host the lab environment, ensure the following:
 
 - `docker` installed (version `26.1.1` or above)
 - `containerlab` for the network lab (version `0.54.2` or above)
@@ -28,7 +26,7 @@ docker import <path-to-image>/cEOS64-lab-<version>.tar.xz ceos:image
 
 ## Quickstart
 
-To get started with the network lab and observability stack, you need to:
+To get started with the network lab stack, you need to:
 
 1. Copy the necessary environment variables to configure the components used within the lab scenarios.
 
@@ -51,13 +49,13 @@ uv pip install .
 lab lab deploy --scenario batteries-included
 ```
 
-> NOTE: Our lab comes with a `batteries-included` setup, providing you with everything you need to get started with network observability right away. This setup includes pre-configured tools and detailed step-by-step instructions to help you explore and learn without any hassle. Head over to the [instructions](./chapters/batteries-included/README.md) section to begin!
+> NOTE: Our lab comes with a `batteries-included` setup, providing you with everything you need to get started with network lab right away. This setup includes pre-configured tools and detailed step-by-step instructions to help you explore and learn without any hassle. Head over to the [instructions](./chapters/batteries-included/README.md) section to begin!
 
 ---
 
 ## Managing Lab Environment with `lab`
 
-The `lab` utility tool simplifies managing and monitoring the network lab and observability stack set up within this repository. It provides a suite of commands designed to streamline various tasks associated with your network infrastructure.
+The `lab` utility tool simplifies managing and monitoring the network lab and other stack set up within this repository. It provides a suite of commands designed to streamline various tasks associated with your network infrastructure.
 
 ### Top-Level Commands
 
@@ -71,7 +69,7 @@ The `lab` utility includes five main commands to help manage the environment:
 
 ### Example Usage
 
-For instance, the `lab lab deploy` command builds and starts a `containerlab` environment along with the observability stack. This command sets up the entire lab scenario, ensuring that all necessary components are up and running.
+For instance, the `lab lab deploy` command builds and starts a `containerlab` environment along with the automation stack. This command sets up the entire lab scenario, ensuring that all necessary components are up and running.
 
 ```bash
 # Start the network lab
@@ -108,18 +106,7 @@ INFO[0001] Creating virtual wire: ceos-01:eth1 <--> ceos-02:eth1
 
 ---
 
-## Lab Scenarios
-
-The [`chapters/`](./chapters/) folder contains a collection of lab scenarios designed to help you explore modern network observability techniques using open-source tools. These scenarios are directly aligned with the chapters of the book.
-
-Each practical chapter provides two lab scenarios:
-
-1. **Skeleton Scenario (`ch<number>`):** This scenario includes only the bare minimum setup required to follow along with the exercises in the corresponding chapter of the book.
-2. **Completed Scenario (`ch<number>-completed`):** This scenario comes fully configured, with all components set up as described in the chapter.
-
-![Lab Components Grafana](./pics/batteries-included-grafana.png)
-
-### Overview of Practical Chapters
+## Overview of Practical Chapters
 
 Here is a brief overview of the practical chapters and the key concepts you will encounter:
 
