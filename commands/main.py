@@ -145,9 +145,6 @@ def deploy_droplet(
     [u]Example:[/u]
         [i]> labcli setup deploy[/i]
     """
-    # First create the keep_api_key file in the root directory from the environment variable using Path
-    keep_api_key = Path("./keep_api_key")
-    keep_api_key.write_text(ENVVARS.get("KEEP_API_KEY", ""))
 
     # Then create the droplets
     exec_cmd = ansible_command(
@@ -175,9 +172,6 @@ def deploy_droplet(
     else:
         typer.echo("Issues encountered setting up droplets")
         raise typer.Abort()
-
-    # Delete the keep_api_key file
-    keep_api_key.unlink()
 
 
 @app.command(rich_help_panel="DigitalOcean", name="destroy")
