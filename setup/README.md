@@ -2,7 +2,7 @@
 
 This directory contains instructions for deploying a remote droplet (virtual machine) on DigitalOcean to follow along with the labs stored in this repository.
 
-The virtual machine is configured to run the network automation cookbook lab using the `labcli` utility tool. If you are following along with the book, you can use this virtual machine to run the labs presented in the book.
+The virtual machine is configured to run the network automation cookbook lab using the `lab` utility tool. If you are following along with the book, you can use this virtual machine to run the labs presented in the book.
 
 ![Overall Lab Environment](./../pics/overall-lab-environment.png)
 
@@ -10,7 +10,7 @@ The virtual machine is configured to run the network automation cookbook lab usi
   - [Requirements](#requirements)
     - [1. Create a Digital Ocean account](#1-create-a-digital-ocean-account)
     - [2. Fork and Clone the Git Repository](#2-fork-and-clone-the-git-repository)
-    - [3. Install the `labcli` tool](#3-install-the-labcli-tool)
+    - [3. Install the `lab` tool](#3-install-the-lab-tool)
     - [4. Setup environment files](#4-setup-environment-files)
     - [5. Download the Arista cEOS images](#5-download-the-arista-ceos-images)
     - [6. Create a Digital Ocean API token](#6-create-a-digital-ocean-api-token)
@@ -24,7 +24,7 @@ The virtual machine is configured to run the network automation cookbook lab usi
 
 ## Requirements
 
-This guide uses DigitalOcean as the cloud provider, and it's important to note that charges may apply. The process employs the `labcli` utility to wrap Ansible playbooks for configuring the DigitalOcean droplet. A "control" machine, usually your local machine, is required to execute the commands and initiate the setup process.
+This guide uses DigitalOcean as the cloud provider, and it's important to note that charges may apply. The process employs the `lab` utility to wrap Ansible playbooks for configuring the DigitalOcean droplet. A "control" machine, usually your local machine, is required to execute the commands and initiate the setup process.
 
 ### 1. Create a Digital Ocean account
 
@@ -42,16 +42,16 @@ git clone https://github.com/<your-user>/cookbook-lab.git
 cd cookbook-lab
 ```
 
-### 3. Install the `labcli` tool
+### 3. Install the `lab` tool
 
-The `labcli` tool must be installed on your local or "control" machine. This tool is necessary to access data from the `cookbook-lab` repository and set up a ready-to-go environment.
+The `lab` tool must be installed on your local or "control" machine. This tool is necessary to access data from the `cookbook-lab` repository and set up a ready-to-go environment.
 
-To install the `labcli` tool on your local machine, follow these steps:
+To install the `lab` tool on your local machine, follow these steps:
 
-> **Note:** It is recommended to install `labcli` in a virtualized environment. Tools like [Pipenv](https://pipenv.pypa.io/en/latest/) can assist with this process.
+> **Note:** It is recommended to install `lab` in a virtualized environment. Tools like [Pipenv](https://pipenv.pypa.io/en/latest/) can assist with this process.
 
 ```bash
-# Install labcli
+# Install lab
 pip install .
 ```
 
@@ -116,16 +116,16 @@ Additionally, you can specify a particular branch to be installed by setting the
 
 ### 9. Create a Digital Ocean droplet
 
-You're now ready to begin setting up the DigitalOcean droplet. Use the command `labcli setup deploy` to start the process. This script will initiate an Ansible playbook that will prompt you to specify the characteristics of your droplet, such as its size, region, and other details. Follow the prompts similar to those shown in the figure below, and the provisioning will commence, setting up the environment automatically.
+You're now ready to begin setting up the DigitalOcean droplet. Use the command `lab setup deploy` to start the process. This script will initiate an Ansible playbook that will prompt you to specify the characteristics of your droplet, such as its size, region, and other details. Follow the prompts similar to those shown in the figure below, and the provisioning will commence, setting up the environment automatically.
 
 On your local or "control" machine run the command to set the droplet up:
 
 ```bash
-# Go to your forked repository and check labcli command capabilities
-labcli --help
+# Go to your forked repository and check lab command capabilities
+lab --help
 
 # Deploy DigitalOcean Droplet
-labcli setup deploy
+lab setup deploy
 ```
 
 The setup playbook will ask for the droplet image, its size and region to be deployed. It comes with default values, but you can change them if you prefer a bigger droplet size or region, for more information see [here](https://slugs.do-api.dev/).
@@ -137,16 +137,16 @@ The setup playbook will ask for the droplet image, its size and region to be dep
 > E: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), is another process using it?
 > ```
 >
-> In such cases, simply run the command again. The playbooks executed by `labcli setup deploy` are designed to be idempotent, meaning you can rerun the command without causing any adverse effects. This is particularly useful if you encounter issues like DigitalOcean API problems. Just make sure to use the same variables as initially prompted.
+> In such cases, simply run the command again. The playbooks executed by `lab setup deploy` are designed to be idempotent, meaning you can rerun the command without causing any adverse effects. This is particularly useful if you encounter issues like DigitalOcean API problems. Just make sure to use the same variables as initially prompted.
 
-Once the setup completes, use the `labcli setup show` command to display an SSH command that will allow you to quickly access your droplet.
+Once the setup completes, use the `lab setup show` command to display an SSH command that will allow you to quickly access your droplet.
 
 ```bash
 # Check droplet SSH command and IP address
-labcli setup show
+lab setup show
 ```
 
-At this point, the droplet is fully set up with Docker, Containerlab, and the labcli tool installed. Additionally, your forked repository is cloned and ready to use. By default, the `batteries-included` scenario is running, and Nautobot is configured. Now, let's explore the various ways you can interact with your lab scenarios.
+At this point, the droplet is fully set up with Docker, Containerlab, and the lab tool installed. Additionally, your forked repository is cloned and ready to use. By default, the `batteries-included` scenario is running, and Nautobot is configured. Now, let's explore the various ways you can interact with your lab scenarios.
 
 ## Interacting with the Lab Scenarios
 
@@ -155,7 +155,7 @@ Now, you can start exploring and interacting with your lab environment. It inclu
 Here's an example of how to connect to an Arista cEOS network device using SSH. First, connect to the DigitalOcean droplet:
 
 ```bash
-# Use the command output from the `labcli setup show` command from before
+# Use the command output from the `lab setup show` command from before
 ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_do root@<droplet-ip-address>
 ```
 
@@ -167,7 +167,7 @@ docker exec -it ceos-01 Cli
 
 
 # OR via SSH (using the default username and password). You can find the username and password in the .env file.
-ssh labcli@ceos-01
+ssh lab@ceos-01
 ```
 
 Regarding the observability stack components like Telegraf, Prometheus, Grafana, and others, you can interact with them primarily through their web interfaces, APIs, or command-line interfaces (if available). For example, to access the Prometheus web interface, open a web browser and navigate to the IP address of your droplet and the port on which your Prometheus service is running (`http://<droplet-ip-address>:9090`). You can then write queries such as `interface_admin_status` in the query panel.
@@ -186,7 +186,7 @@ If you use [Visual Studio Code](https://code.visualstudio.com/) (VSCode), you ca
 
 1. **Open Visual Studio Code**: Launch VSCode on your local machine.
 2. **Navigate to the Remote Explorer**: On the left sidebar, click on the "Remote Explorer" tab. Under "SSH," click the "+" sign or right-click and select "New Remote."
-3. **Set Up SSH Connection**: This action will prompt you to enter the SSH connection command. You can obtain this command by running `labcli setup show` on your local or "control" machine. The output will resemble the following command:
+3. **Set Up SSH Connection**: This action will prompt you to enter the SSH connection command. You can obtain this command by running `lab setup show` on your local or "control" machine. The output will resemble the following command:
 
    ```bash
    ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_do root@<droplet-ip-address>
@@ -199,7 +199,7 @@ If you use [Visual Studio Code](https://code.visualstudio.com/) (VSCode), you ca
 5. **Access Your Workspace**: You are now connected to your droplet and within your forked repository. Open the "Terminal" tab in VSCode and check the status of the `batteries-included` scenario by running the following command:
 
    ```bash
-   labcli docker ps
+   lab docker ps
    ```
 
 This setup provides a dedicated workspace where you can freely change, add, or delete configurations and components to test different scenarios.
@@ -216,15 +216,15 @@ To destroy a lab scenario **on the DigitalOcean droplet**, you can use the follo
 
 ```bash
 # Remove the batteries-included scenario components
-labcli lab destroy --scenario batteries-included
+lab lab destroy --scenario batteries-included
 
 # Remove ALL scenarios setup (useful when you might not remember which one was up)
-labcli lab purge
+lab lab purge
 ```
 
-To remove the remote DigitalOcean droplet, you can run the command `labcli setup destroy` **on your local or "control" machine**. This will delete the droplet from your account, which is useful when you have finished the labs for the day.
+To remove the remote DigitalOcean droplet, you can run the command `lab setup destroy` **on your local or "control" machine**. This will delete the droplet from your account, which is useful when you have finished the labs for the day.
 
 ```bash
 # Delete the DigitalOcean Droplet
-labcli setup destroy
+lab setup destroy
 ```
