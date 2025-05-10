@@ -84,7 +84,7 @@ def lab_deploy(
     containerlab_deploy(topology=topology, sudo=sudo)
 
     # Start docker compose
-    docker_start(compose_file=Path("./chapters/{scenario.value}/docker-compose.yml"), verbose=True)
+    docker_start(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), verbose=True)
 
     typer.echo(f"Lab environment deployed for scenario: [orange1 i]{scenario.value}")
 
@@ -103,7 +103,7 @@ def lab_destroy(
     typer.echo(f"Destroying lab environment for scenario: [orange1 i]{scenario.value}")
 
     # Stop docker compose
-    docker_destroy(compose_file=Path("./chapters/{scenario.value}/docker-compose.yml"), volumes=True, verbose=True)
+    docker_destroy(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), volumes=True, verbose=True)
 
     # Destroy containerlab topology
     containerlab_destroy(topology=topology, sudo=sudo)
@@ -143,7 +143,7 @@ def lab_show(
     typer.echo(f"Showing lab environment for scenario: [orange1 i]{scenario.value}")
 
     # Show docker compose
-    docker_ps(compose_file=Path("./chapters/{scenario.value}/docker-compose.yml"), verbose=True)
+    docker_ps(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), verbose=True)
 
     # Show containerlab topology
     containerlab_inspect(topology=topology, sudo=sudo)
@@ -171,7 +171,7 @@ def lab_prepare(
     containerlab_deploy(topology=topology, sudo=sudo)
 
     # Start docker compose
-    docker_start(compose_file=Path("./chapters/{scenario.value}/docker-compose.yml"), services=[], verbose=True)
+    docker_start(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), services=[], verbose=True)
 
     typer.echo(f"Lab environment prepared for scenario: [orange1 i]{scenario.value}")
 
@@ -196,10 +196,10 @@ def lab_update(
     typer.echo(f"Updating lab environment for scenario: [orange1 i]{scenario.value}")
 
     # Delete the containers
-    docker_rm(compose_file=Path("./chapters/{scenario.value}/docker-compose.yml"), services=services, volumes=True, force=True, verbose=True)
+    docker_rm(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), services=services, volumes=True, force=True, verbose=True)
 
     # Start them back
-    docker_start(compose_file=Path("./chapters/{scenario.value}/docker-compose.yml"), services=services, verbose=True)
+    docker_start(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), services=services, verbose=True)
 
     typer.echo(f"Lab environment updated for scenario: [orange1 i]{scenario.value}")
 
@@ -224,13 +224,13 @@ def lab_rebuild(
     typer.echo(f"Rebuilding lab environment for scenario: [orange1 i]{scenario.value}")
 
     # Stop the containers
-    docker_stop(compose_file=Path("./chapters/{scenario.value}/docker-compose.yml"), services=services, verbose=True)
+    docker_stop(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), services=services, verbose=True)
 
     # Rebuild the containers
-    docker_build(compose_file=Path("./chapters/{scenario.value}/docker-compose.yml"), services=services, verbose=True)
+    docker_build(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), services=services, verbose=True)
 
     # Start them back
-    docker_start(compose_file=Path("./chapters/{scenario.value}/docker-compose.yml"), services=services, verbose=True)
+    docker_start(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), services=services, verbose=True)
 
     typer.echo(f"Lab environment rebuilt for scenario: [orange1 i]{scenario.value}")
 
