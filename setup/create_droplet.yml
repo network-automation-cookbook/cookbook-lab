@@ -26,7 +26,7 @@
       community.digitalocean.digital_ocean_droplet:
         state: present
         oauth_token: "{{ lookup('ansible.builtin.env', 'DO_API_TOKEN') }}"
-        name: "cookbook-lab-droplet"
+        name: "{{ lookup('ansible.builtin.env', 'DO_DROPLET_NAME') }}"
         size: "{{ droplet_size }}"
         image: "{{ droplet_image }}"
         region: "{{ droplet_region }}"
@@ -35,7 +35,7 @@
         ssh_keys: "{{ lookup('ansible.builtin.env', 'DO_SSH_FINGERPRINT') }}"
         project: "network-cookbook-lab"
         tags:
-          - "cookbook-lab"
+          - "cookbook-lab-1"
       register: droplet_result
 
     # - debug:

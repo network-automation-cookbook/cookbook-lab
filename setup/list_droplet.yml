@@ -1,6 +1,6 @@
 ---
 - name: Show Inventory
-  hosts: "cookbook-lab-droplet"
+  hosts: "{{ lookup('ansible.builtin.env', 'DO_DROPLET_NAME') }}"
   gather_facts: false
   tasks:
     - name: Show SSH command

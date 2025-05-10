@@ -1,7 +1,7 @@
 ---
 #### Bootstrap cookbook-lab-droplet
 - name: Bootstrap cookbook-lab-droplet
-  hosts: "cookbook-lab-droplet"
+  hosts: "{{ lookup('ansible.builtin.env', 'DO_DROPLET_NAME') }}"
   gather_facts: false
   tasks:
     - name: Wait for connection to cookbook-lab-droplet
@@ -127,7 +127,7 @@
 
 #### Setup cookbook-lab-droplet
 - name: Setup labcli app
-  hosts: cookbook-lab-droplet
+  hosts: "{{ lookup('ansible.builtin.env', 'DO_DROPLET_NAME') }}"
   vars:
     ansible_python_interpreter: /root/miniconda/bin/python
   environment:
@@ -152,9 +152,9 @@
       register: labcli_install
       changed_when: labcli_install.rc != 0
 
-    - name: Run labcli batteries included
+    - name: Run lab batteries included
       ansible.builtin.shell:
-        cmd: "cd /root/cookbook-lab && labcli lab prepare --scenario batteries-included"
+        cmd: "cd /root/cookbook-lab && lab lab prepare --scenario batteries-included"
         executable: /bin/bash
       register: labcli_run
       changed_when: labcli_run.rc != 0

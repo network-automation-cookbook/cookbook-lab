@@ -18,7 +18,16 @@ from labcli.utils.containerlab_utils import (
     containerlab_destroy,
     containerlab_inspect,
 )
-from labcli.utils.docker_utils import docker_ps, docker_destroy, docker_start
+from labcli.utils.docker_utils import (
+    docker_ps,
+    docker_destroy,
+    docker_start,
+    docker_network,
+    docker_rm,
+    docker_stop,
+    docker_build,
+    DockerNetworkAction
+)
 
 # lab_app = typer.Typer(help="Lab related commands", rich_markup_mode="rich")
 
@@ -28,29 +37,203 @@ app._add_completion = False
 setup_app = typer.Typer(help="Lab hosting machine setup related commands.", rich_markup_mode="rich")
 app.add_typer(setup_app, name="setup")
 
+lab_app = typer.Typer(help="Overall Lab management related commands.", rich_markup_mode="rich")
+app.add_typer(lab_app, name="lab")
+
 load_dotenv(verbose=True, override=True, dotenv_path=Path("./.env"))
 ENVVARS = {**dotenv_values(".env"), **dotenv_values(".setup.env"), **os.environ}
 
-# @app.command()
-# def create(lab: str = typer.Argument(..., help="Name of the lab")):
-#     """Create a lab
 
-#     Example:
+# --------------------------------------#
+#                  Lab                  #
+# --------------------------------------#
 
-#     $ lab create netobs
-#     """
-#     # Deploy containerlab topology
-#     clab_cmd = containerlab_deploy(
-#         sudo=True, topology=Path(f"./labs/{lab}/containerlab/lab.clab.yml")
-#     )
-#     if clab_cmd is not None and clab_cmd.returncode != 0:
-#         typer.echo(clab_cmd.stderr)
-#         raise typer.Abort()
-#     # Start docker containers
-#     docker_cmd = docker_start(compose_file=Path(f"./labs/{lab}/docker-compose.yml"))
-#     if docker_cmd is not None and docker_cmd.returncode != 0:
-#         typer.echo(docker_cmd.stderr)
-#         raise typer.Abort()
+
+class LabCLIScenarios(Enum):
+    """LabCLI scenarios."""
+
+    BATTERIES_INCLUDED = "batteries-included"
+
+
+@lab_app.command("deploy")
+def lab_deploy(
+    scenario: Annotated[
+        LabCLIScenarios, typer.Option("--scenario", "-s", help="Scenario to execute command", envvar="LAB_SCENARIO")
+    ],
+    topology: Annotated[Path, typer.Option(help="Path to the topology file", exists=True)] = Path(
+        "./containerlab/lab.yml"
+    ),
+    network_name: Annotated[
+        str, typer.Option(help="Network name", envvar="LAB_NETWORK_NAME")
+    ] = "network-cookbook-lab",
+    subnet: Annotated[str, typer.Option(help="Network subnet", envvar="LAB_SUBNET")] = "198.51.100.0/24",
+    sudo: Annotated[bool, typer.Option(help="Use sudo to run containerlab", envvar="LAB_SUDO")] = False,
+):
+    """Deploy a lab topology."""
+    typer.echo(f"Deploying lab environment for scenario: [orange1 i]{scenario.value}")
+
+    # First create docker network if not exists
+    docker_network(
+        DockerNetworkAction.CREATE,
+        name=network_name,
+        driver="bridge",
+        subnet=subnet,
+    )
+
+    # Deploy containerlab topology
+    containerlab_deploy(topology=topology, sudo=sudo)
+
+    # Start docker compose
+    docker_start(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), verbose=True)
+
+    typer.echo(f"Lab environment deployed for scenario: [orange1 i]{scenario.value}")
+
+
+@lab_app.command("destroy")
+def lab_destroy(
+    scenario: Annotated[
+        LabCLIScenarios, typer.Option("--scenario", "-s", help="Scenario to execute command", envvar="LAB_SCENARIO")
+    ],
+    topology: Annotated[Path, typer.Option(help="Path to the topology file", exists=True)] = Path(
+        "./containerlab/lab.yml"
+    ),
+    sudo: Annotated[bool, typer.Option(help="Use sudo to run containerlab", envvar="LAB_SUDO")] = False,
+):
+    """Destroy a lab topology."""
+    typer.echo(f"Destroying lab environment for scenario: [orange1 i]{scenario.value}")
+
+    # Stop docker compose
+    docker_destroy(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), volumes=True, verbose=True)
+
+    # Destroy containerlab topology
+    containerlab_destroy(topology=topology, sudo=sudo)
+
+    typer.echo(f"Lab environment destroyed for scenario: [orange1 i]{scenario.value}")
+
+
+@lab_app.command("purge")
+def lab_purge(
+    sudo: Annotated[bool, typer.Option(help="Use sudo to run containerlab", envvar="LAB_SUDO")] = False,
+):
+    """Purge all lab environments."""
+    typer.echo("[b i]PURGING ALL LAB ENVIRONMENTS")
+    typer.echo("Purging lab environments")
+
+    # Iterate over all scenarios and destroy them
+    for scenario in LabCLIScenarios:
+        try:
+            lab_destroy(scenario=scenario, sudo=sudo)
+        except typer.Exit:
+            pass
+
+    typer.echo("[b i]LAB ENVIRONMENTS PURGED")
+
+
+@lab_app.command("show")
+def lab_show(
+    scenario: Annotated[
+        LabCLIScenarios, typer.Option("--scenario", "-s", help="Scenario to execute command", envvar="LAB_SCENARIO")
+    ],
+    topology: Annotated[Path, typer.Option(help="Path to the topology file", exists=True)] = Path(
+        "./containerlab/lab.yml"
+    ),
+    sudo: Annotated[bool, typer.Option(help="Use sudo to run containerlab", envvar="LAB_SUDO")] = False,
+):
+    """Show lab environment."""
+    typer.echo(f"Showing lab environment for scenario: [orange1 i]{scenario.value}")
+
+    # Show docker compose
+    docker_ps(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), verbose=True)
+
+    # Show containerlab topology
+    containerlab_inspect(topology=topology, sudo=sudo)
+
+    typer.echo(f"Lab environment shown for scenario: [orange1 i]{scenario.value}")
+
+
+@lab_app.command("prepare")
+def lab_prepare(
+    scenario: Annotated[
+        LabCLIScenarios, typer.Option("--scenario", "-s", help="Scenario to execute command", envvar="LAB_SCENARIO")
+    ],
+    topology: Annotated[Path, typer.Option(help="Path to the topology file", exists=True)] = Path(
+        "./containerlab/lab.yml"
+    ),
+    sudo: Annotated[bool, typer.Option(help="Use sudo to run containerlab", envvar="LAB_SUDO")] = False,
+):
+    """Prepare the lab for the scenario."""
+    typer.echo(f"Preparing lab environment for scenario: [orange1 i]{scenario.value}")
+
+    # Destroy all other lab environments and network topologies
+    lab_purge(sudo=sudo)
+
+    # Deploy containerlab topology
+    containerlab_deploy(topology=topology, sudo=sudo)
+
+    # Start docker compose
+    docker_start(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), services=[], verbose=True)
+
+    typer.echo(f"Lab environment prepared for scenario: [orange1 i]{scenario.value}")
+
+
+@lab_app.command("update")
+def lab_update(
+    services: Annotated[list[str], typer.Argument(help="Service(s) to update")],
+    scenario: Annotated[
+        LabCLIScenarios, typer.Option("--scenario", "-s", help="Scenario to execute command", envvar="LAB_SCENARIO")
+    ],
+):
+    """Update the service(s) of a lab scenario.
+
+    [u]Example:[/u]]
+
+    To update all services:
+        [i]labcli lab update --scenario batteries-included[/i]
+
+    To update a specific service:
+        [i]labcli lab update telegraf-01 telegraf-02 --scenario batteries-included[/i]
+    """
+    typer.echo(f"Updating lab environment for scenario: [orange1 i]{scenario.value}")
+
+    # Delete the containers
+    docker_rm(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), services=services, volumes=True, force=True, verbose=True)
+
+    # Start them back
+    docker_start(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), services=services, verbose=True)
+
+    typer.echo(f"Lab environment updated for scenario: [orange1 i]{scenario.value}")
+
+
+@lab_app.command("rebuild")
+def lab_rebuild(
+    services: Annotated[list[str], typer.Argument(help="Service(s) to rebuild")],
+    scenario: Annotated[
+        LabCLIScenarios, typer.Option("--scenario", "-s", help="Scenario to execute command", envvar="LAB_SCENARIO")
+    ],
+):
+    """Rebuild the service(s) of a lab scenario.
+
+    [u]Example:[/u]
+
+    To rebuild all services:
+        [i]labcli lab rebuild --scenario batteries-included[/i]
+
+    To rebuild a specific service:
+        [i]labcli lab rebuild webhook --scenario batteries-included[/i]
+    """
+    typer.echo(f"Rebuilding lab environment for scenario: [orange1 i]{scenario.value}")
+
+    # Stop the containers
+    docker_stop(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), services=services, verbose=True)
+
+    # Rebuild the containers
+    docker_build(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), services=services, verbose=True)
+
+    # Start them back
+    docker_start(compose_file=Path(f"./chapters/{scenario.value}/docker-compose.yml"), services=services, verbose=True)
+
+    typer.echo(f"Lab environment rebuilt for scenario: [orange1 i]{scenario.value}")
+
 
 # --------------------------------------#
 #           Digital Ocean VM            #
